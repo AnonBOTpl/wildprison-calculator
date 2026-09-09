@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WildPrison - Gang Optimization Tool v3.0</title>
+    <title>WildPrison - Gang Optimization Tool v3.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans min-h-screen p-4 md:p-8">
@@ -15,9 +15,14 @@
                 <h1 class="text-3xl font-extrabold text-amber-400">WildPrison Gang Optimizer</h1>
                 <p class="text-slate-400 text-sm mt-1">Token Sacrifice calculator, Research tracker, and Ascension priority engine.</p>
             </div>
-            <div class="bg-slate-800 border border-slate-700 px-4 py-2 rounded-lg text-right">
-                <span class="text-xs text-slate-400 uppercase block font-semibold">Research Audit Score</span>
-                <span id="auditScoreDisplay" class="text-2xl font-black text-emerald-400">100%</span>
+            <div class="flex items-center gap-3">
+                <button onclick="resetAllProgress()" class="text-xs bg-red-950/60 border border-red-800/80 hover:bg-red-900 text-red-300 px-3 py-2 rounded-lg font-medium transition flex items-center gap-1.5 shadow-sm">
+                    <span>🔄</span> Reset Progress
+                </button>
+                <div class="bg-slate-800 border border-slate-700 px-4 py-2 rounded-lg text-right">
+                    <span class="text-xs text-slate-400 uppercase block font-semibold">Research Audit Score</span>
+                    <span id="auditScoreDisplay" class="text-2xl font-black text-emerald-400">100%</span>
+                </div>
             </div>
         </header>
 
@@ -84,36 +89,87 @@
                     <h2 class="text-xl font-bold text-slate-200">Ascension Advisor</h2>
                 </div>
 
+                <!-- Permanent Upgrade Warning -->
+                <div class="p-2.5 rounded-lg bg-red-950/60 border border-red-800/80 text-red-300 text-[11px] flex items-center gap-2">
+                    <span>⚠️</span>
+                    <span><strong>Warning:</strong> Ascension & Research upgrades are <strong>PERMANENT</strong> and cannot be reset on server!</span>
+                </div>
+
+                <!-- Overall Progress Visualizer -->
+                <div class="bg-slate-900/90 p-3 rounded-lg border border-slate-700/80 space-y-1.5">
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="text-slate-400 uppercase font-semibold tracking-wider text-[10px]">Overall Ascension Progress</span>
+                        <span id="ascProgressPercent" class="text-amber-400 font-bold">0%</span>
+                    </div>
+                    <div class="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden border border-slate-700">
+                        <div id="ascProgressBar" class="bg-gradient-to-r from-amber-500 via-sky-400 to-emerald-400 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Input Fields with Mini-Bars -->
                 <div class="grid grid-cols-2 gap-2 text-xs">
                     <div>
-                        <label class="block font-semibold text-slate-400 uppercase mb-1">Money</label>
+                        <div class="flex justify-between font-semibold text-slate-400 uppercase mb-1 text-[10px]">
+                            <span>Money</span>
+                            <span id="val_asc_money" class="text-slate-300">0/100</span>
+                        </div>
                         <input type="number" id="asc_money" value="0" min="0" max="200" oninput="calculateAscension()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white focus:outline-none focus:border-amber-400">
+                        <div class="w-full bg-slate-900 rounded-full h-1 mt-1 overflow-hidden">
+                            <div id="bar_asc_money" class="bg-amber-400 h-1 rounded-full transition-all" style="width: 0%"></div>
+                        </div>
                     </div>
                     <div>
-                        <label class="block font-semibold text-slate-400 uppercase mb-1">Tokens</label>
+                        <div class="flex justify-between font-semibold text-slate-400 uppercase mb-1 text-[10px]">
+                            <span>Tokens</span>
+                            <span id="val_asc_tokens" class="text-slate-300">0/150</span>
+                        </div>
                         <input type="number" id="asc_tokens" value="0" min="0" max="200" oninput="calculateAscension()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white focus:outline-none focus:border-amber-400">
+                        <div class="w-full bg-slate-900 rounded-full h-1 mt-1 overflow-hidden">
+                            <div id="bar_asc_tokens" class="bg-sky-400 h-1 rounded-full transition-all" style="width: 0%"></div>
+                        </div>
                     </div>
                     <div>
-                        <label class="block font-semibold text-slate-400 uppercase mb-1">Pet XP</label>
+                        <div class="flex justify-between font-semibold text-slate-400 uppercase mb-1 text-[10px]">
+                            <span>Pet XP</span>
+                            <span id="val_asc_pet_xp" class="text-slate-300">0/100</span>
+                        </div>
                         <input type="number" id="asc_pet_xp" value="0" min="0" max="200" oninput="calculateAscension()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white focus:outline-none focus:border-amber-400">
+                        <div class="w-full bg-slate-900 rounded-full h-1 mt-1 overflow-hidden">
+                            <div id="bar_asc_pet_xp" class="bg-purple-400 h-1 rounded-full transition-all" style="width: 0%"></div>
+                        </div>
                     </div>
                     <div>
-                        <label class="block font-semibold text-slate-400 uppercase mb-1">Armor XP</label>
+                        <div class="flex justify-between font-semibold text-slate-400 uppercase mb-1 text-[10px]">
+                            <span>Armor XP</span>
+                            <span id="val_asc_armor_xp" class="text-slate-300">0/100</span>
+                        </div>
                         <input type="number" id="asc_armor_xp" value="0" min="0" max="200" oninput="calculateAscension()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white focus:outline-none focus:border-amber-400">
+                        <div class="w-full bg-slate-900 rounded-full h-1 mt-1 overflow-hidden">
+                            <div id="bar_asc_armor_xp" class="bg-indigo-400 h-1 rounded-full transition-all" style="width: 0%"></div>
+                        </div>
                     </div>
                     <div class="col-span-2">
-                        <label class="block font-semibold text-slate-400 uppercase mb-1">Enchant Chance</label>
+                        <div class="flex justify-between font-semibold text-slate-400 uppercase mb-1 text-[10px]">
+                            <span>Enchant Chance</span>
+                            <span id="val_asc_enchant_chance" class="text-slate-300">0/100</span>
+                        </div>
                         <input type="number" id="asc_enchant_chance" value="0" min="0" max="200" oninput="calculateAscension()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white focus:outline-none focus:border-amber-400">
+                        <div class="w-full bg-slate-900 rounded-full h-1 mt-1 overflow-hidden">
+                            <div id="bar_asc_enchant_chance" class="bg-emerald-400 h-1 rounded-full transition-all" style="width: 0%"></div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Recommendation Output -->
-                <div class="bg-slate-900/80 border border-slate-700/50 rounded-lg p-3 space-y-2">
-                    <div class="text-xs font-bold uppercase text-amber-400">Recommended Next Step</div>
-                    <div id="ascensionRecommendation" class="text-xs font-semibold text-emerald-300">
-                        Balance Money, Pet XP, and Armor XP to level 20.
+                <div class="bg-slate-900/90 border border-slate-700/50 rounded-lg p-3 space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span id="ascPhaseBadge" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">Phase 1 / 9</span>
+                        <span class="text-[10px] text-slate-400 uppercase font-semibold">Ascension Advisor</span>
                     </div>
-                    <div id="ascensionDetail" class="text-[11px] text-slate-400 leading-tight">
+                    <div id="ascensionRecommendation" class="text-xs font-bold text-emerald-300 leading-snug">
+                        Phase 1: Balance Money, Pet XP, Armor XP -> Level 20
+                    </div>
+                    <div id="ascensionDetail" class="text-[11px] text-slate-400 leading-relaxed">
                         Officer Priority: Focus on early core balance before pushing tokens.
                     </div>
                 </div>
@@ -224,13 +280,19 @@
 
                     <div class="space-y-1">
                         <div class="font-bold text-red-500 uppercase tracking-wider">❌ Avoid / Do Last</div>
-                        <label class="flex items-center space-x-2 bg-slate-900/60 p-2 rounded hover:bg-slate-900 cursor-pointer">
-                            <input type="checkbox" id="res_chain_reaction" onchange="updateResearch()" class="rounded text-red-500 focus:ring-0">
-                            <span class="text-red-300">Chain Reaction</span>
+                        <label class="flex items-center justify-between bg-red-950/30 border border-red-900/40 p-2 rounded hover:bg-red-950/50 cursor-pointer">
+                            <div class="flex items-center space-x-2">
+                                <input type="checkbox" id="res_chain_reaction" onchange="updateResearch()" class="rounded text-red-500 focus:ring-0">
+                                <span class="text-red-300">Chain Reaction</span>
+                            </div>
+                            <span class="text-[9px] font-bold bg-red-900/80 text-red-200 px-1.5 py-0.5 rounded uppercase">⛔ NEVER BUY</span>
                         </label>
-                        <label class="flex items-center space-x-2 bg-slate-900/60 p-2 rounded hover:bg-slate-900 cursor-pointer">
-                            <input type="checkbox" id="res_bad_fillers" onchange="updateResearch()" class="rounded text-red-500 focus:ring-0">
-                            <span class="text-red-300">Street Rep 2 & Fast Learner</span>
+                        <label class="flex items-center justify-between bg-red-950/30 border border-red-900/40 p-2 rounded hover:bg-red-950/50 cursor-pointer">
+                            <div class="flex items-center space-x-2">
+                                <input type="checkbox" id="res_bad_fillers" onchange="updateResearch()" class="rounded text-red-500 focus:ring-0">
+                                <span class="text-red-300">Street Rep 2 & Fast Learner</span>
+                            </div>
+                            <span class="text-[9px] font-bold bg-red-900/80 text-red-200 px-1.5 py-0.5 rounded uppercase">⛔ NEVER BUY</span>
                         </label>
                     </div>
                 </div>
@@ -275,6 +337,60 @@
     </div>
 
     <script>
+        // --- LOCAL STORAGE HELPERS ---
+        function saveProgress() {
+            const data = {
+                moneyInput: document.getElementById('moneyInput').value,
+                xpInput: document.getElementById('xpInput').value,
+                asc_money: document.getElementById('asc_money').value,
+                asc_tokens: document.getElementById('asc_tokens').value,
+                asc_pet_xp: document.getElementById('asc_pet_xp').value,
+                asc_armor_xp: document.getElementById('asc_armor_xp').value,
+                asc_enchant_chance: document.getElementById('asc_enchant_chance').value,
+                research: {}
+            };
+
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                data.research[cb.id] = cb.checked;
+            });
+
+            localStorage.setItem('wildprison_optimizer_data', JSON.stringify(data));
+        }
+
+        function loadProgress() {
+            const saved = localStorage.getItem('wildprison_optimizer_data');
+            if (!saved) return;
+
+            try {
+                const data = JSON.parse(saved);
+                if (data.moneyInput !== undefined) document.getElementById('moneyInput').value = data.moneyInput;
+                if (data.xpInput !== undefined) document.getElementById('xpInput').value = data.xpInput;
+                if (data.asc_money !== undefined) document.getElementById('asc_money').value = data.asc_money;
+                if (data.asc_tokens !== undefined) document.getElementById('asc_tokens').value = data.asc_tokens;
+                if (data.asc_pet_xp !== undefined) document.getElementById('asc_pet_xp').value = data.asc_pet_xp;
+                if (data.asc_armor_xp !== undefined) document.getElementById('asc_armor_xp').value = data.asc_armor_xp;
+                if (data.asc_enchant_chance !== undefined) document.getElementById('asc_enchant_chance').value = data.asc_enchant_chance;
+
+                if (data.research) {
+                    Object.keys(data.research).forEach(id => {
+                        const cb = document.getElementById(id);
+                        if (cb) cb.checked = data.research[id];
+                    });
+                }
+            } catch (e) {
+                console.error("Failed to load saved progress", e);
+            }
+        }
+
+        function resetAllProgress() {
+            if (confirm("Are you sure you want to reset all saved progress for the new season?")) {
+                localStorage.removeItem('wildprison_optimizer_data');
+                location.reload();
+            }
+        }
+
+        // --- CALCULATORS ---
         function calculateTokens() {
             const money = parseFloat(document.getElementById('moneyInput').value) || 0;
             const xp = parseFloat(document.getElementById('xpInput').value) || 0;
@@ -326,49 +442,109 @@
                 statusDiv.className = "p-2.5 rounded-lg text-xs font-medium bg-amber-950/60 border border-amber-800 text-amber-300";
                 statusDiv.innerHTML = `⚠️ <strong>Over-invested in Money:</strong> Put your next <strong>${deficit} SP</strong> strictly into <strong>XP</strong>.`;
             }
+
+            saveProgress();
         }
 
-function calculateAscension() {
-            const m = parseInt(document.getElementById('asc_money').value) || 0;
-            const t = parseInt(document.getElementById('asc_tokens').value) || 0;
-            const px = parseInt(document.getElementById('asc_pet_xp').value) || 0;
-            const ax = parseInt(document.getElementById('asc_armor_xp').value) || 0;
-            const ec = parseInt(document.getElementById('asc_enchant_chance').value) || 0;
+        function calculateAscension() {
+            const m = Math.max(0, parseInt(document.getElementById('asc_money').value) || 0);
+            const t = Math.max(0, parseInt(document.getElementById('asc_tokens').value) || 0);
+            const px = Math.max(0, parseInt(document.getElementById('asc_pet_xp').value) || 0);
+            const ax = Math.max(0, parseInt(document.getElementById('asc_armor_xp').value) || 0);
+            const ec = Math.max(0, parseInt(document.getElementById('asc_enchant_chance').value) || 0);
+
+            // Update Input Value Displays & Mini Progress Bars
+            document.getElementById('val_asc_money').innerText = `${m}/100`;
+            document.getElementById('bar_asc_money').style.width = `${Math.min(100, (m / 100) * 100)}%`;
+
+            document.getElementById('val_asc_tokens').innerText = `${t}/150`;
+            document.getElementById('bar_asc_tokens').style.width = `${Math.min(100, (t / 150) * 100)}%`;
+
+            document.getElementById('val_asc_pet_xp').innerText = `${px}/100`;
+            document.getElementById('bar_asc_pet_xp').style.width = `${Math.min(100, (px / 100) * 100)}%`;
+
+            document.getElementById('val_asc_armor_xp').innerText = `${ax}/100`;
+            document.getElementById('bar_asc_armor_xp').style.width = `${Math.min(100, (ax / 100) * 100)}%`;
+
+            document.getElementById('val_asc_enchant_chance').innerText = `${ec}/100`;
+            document.getElementById('bar_asc_enchant_chance').style.width = `${Math.min(100, (ec / 100) * 100)}%`;
+
+            // Calculate Overall Ascension Progress % (550 Total Target Score)
+            const currentTotal = Math.min(m, 100) + Math.min(t, 150) + Math.min(px, 100) + Math.min(ax, 100) + Math.min(ec, 100);
+            const overallPercent = Math.min(100, Math.round((currentTotal / 550) * 100));
+
+            document.getElementById('ascProgressPercent').innerText = `${overallPercent}%`;
+            document.getElementById('ascProgressBar').style.width = `${overallPercent}%`;
 
             const recBox = document.getElementById('ascensionRecommendation');
             const detailBox = document.getElementById('ascensionDetail');
+            const phaseBadge = document.getElementById('ascPhaseBadge');
+
+            function getLowest(stats) {
+                return stats.reduce((min, item) => item.val < min.val ? item : min, stats[0]);
+            }
 
             if (m < 20 || px < 20 || ax < 20) {
-                recBox.innerText = "Phase 1: Balance Money, Pet XP, Armor XP -> Level 20";
-                detailBox.innerText = `Focus on lowest: Money (${m}/20), Pet XP (${px}/20), Armor XP (${ax}/20).`;
+                const target = getLowest([
+                    { name: 'Money', val: m },
+                    { name: 'Pet XP', val: px },
+                    { name: 'Armor XP', val: ax }
+                ]);
+                phaseBadge.innerText = "Phase 1 / 9";
+                recBox.innerText = "Phase 1: Early Balance (0 ➔ 20)";
+                detailBox.innerText = `Priority target: Upgrade ${target.name} (currently ${target.val}/20). Keep Money, Pet XP, and Armor XP balanced.`;
             } else if (t < 50 || px < 50 || ax < 50) {
-                recBox.innerText = "Phase 2: Balance Tokens, Pet XP, Armor XP -> Level 50";
-                detailBox.innerText = `Focus on lowest: Tokens (${t}/50), Pet XP (${px}/50), Armor XP (${ax}/50).`;
+                const target = getLowest([
+                    { name: 'Tokens', val: t },
+                    { name: 'Pet XP', val: px },
+                    { name: 'Armor XP', val: ax }
+                ]);
+                phaseBadge.innerText = "Phase 2 / 9";
+                recBox.innerText = "Phase 2: Mid Balance (20 ➔ 50)";
+                detailBox.innerText = `Priority target: Upgrade ${target.name} (currently ${target.val}/50). Keep Tokens, Pet XP, and Armor XP balanced.`;
             } else if (m < 30) {
-                recBox.innerText = "Phase 3: Upgrade Money -> Level 30";
-                detailBox.innerText = `Push Money from level ${m} to 30.`;
+                phaseBadge.innerText = "Phase 3 / 9";
+                recBox.innerText = "Phase 3: Money Boost (20 ➔ 30)";
+                detailBox.innerText = `Priority target: Push Money from level ${m} to 30.`;
             } else if (px < 100 || ax < 100) {
-                recBox.innerText = "Phase 4: Balance Pet XP & Armor XP -> Level 100";
-                detailBox.innerText = `Focus on lowest: Pet XP (${px}/100), Armor XP (${ax}/100).`;
+                const target = getLowest([
+                    { name: 'Pet XP', val: px },
+                    { name: 'Armor XP', val: ax }
+                ]);
+                phaseBadge.innerText = "Phase 4 / 9";
+                recBox.innerText = "Phase 4: XP Rush (50 ➔ 100)";
+                detailBox.innerText = `Priority target: Upgrade ${target.name} (currently ${target.val}/100). Push Pet XP and Armor XP to 100.`;
+            } else if (t < 100 && ec < 100) {
+                phaseBadge.innerText = "Phase 5 / 9";
+                recBox.innerText = "Phase 5: Tokens / Enchant Chance Choice";
+                detailBox.innerText = `Tokens is ${t}/100, Enchant Chance is ${ec}/100. Push Tokens to 100 (or max Enchant Chance to 100 first).`;
             } else if (t < 100) {
-                recBox.innerText = "Phase 5: Upgrade Tokens -> Level 100";
-                detailBox.innerText = `Push Tokens from ${t}/100 (Optional: Enchant Chance ${ec}/100 can be done before or alongside this).`;
+                phaseBadge.innerText = "Phase 5 / 9";
+                recBox.innerText = "Phase 5: Tokens Rush (50 ➔ 100)";
+                detailBox.innerText = `Priority target: Push Tokens from ${t} to 100. (Enchant Chance is already maxed at 100).`;
             } else if (ec < 100) {
-                recBox.innerText = "Phase 6: Upgrade Enchant Chance -> Level 100";
-                detailBox.innerText = `Push Enchant Chance from ${ec}/100 to 100.`;
+                phaseBadge.innerText = "Phase 6 / 9";
+                recBox.innerText = "Phase 6: Enchant Chance (0 ➔ 100)";
+                detailBox.innerText = `Priority target: Upgrade Enchant Chance from ${ec} to 100.`;
             } else if (m < 50) {
-                recBox.innerText = "Phase 7: Upgrade Money -> Level 50";
-                detailBox.innerText = `Push Money from level ${m} to 50.`;
+                phaseBadge.innerText = "Phase 7 / 9";
+                recBox.innerText = "Phase 7: Money Push (30 ➔ 50)";
+                detailBox.innerText = `Priority target: Push Money from ${m} to 50.`;
             } else if (t < 150) {
-                recBox.innerText = "Phase 8: Push Tokens -> Level 150/200";
-                detailBox.innerText = `Tokens currently ${t}. Push towards 150+ (optional late-game tier).`;
+                phaseBadge.innerText = "Phase 8 / 9";
+                recBox.innerText = "Phase 8: Late Tokens (100 ➔ 150/200)";
+                detailBox.innerText = `Priority target: Push Tokens from ${t} towards 150+ (optional late-game tier).`;
             } else if (m < 100) {
-                recBox.innerText = "Phase 9: Max Money -> Level 100";
-                detailBox.innerText = `Final push: Upgrade Money from level ${m} to 100.`;
+                phaseBadge.innerText = "Phase 9 / 9";
+                recBox.innerText = "Phase 9: Max Money (50 ➔ 100)";
+                detailBox.innerText = `Final push: Upgrade Money from ${m} to 100.`;
             } else {
+                phaseBadge.innerText = "MAXED";
                 recBox.innerText = "✅ Ascension Milestones Maxed!";
                 detailBox.innerText = "All recommended Ascension priorities are complete!";
             }
+
+            saveProgress();
         }
 
         function updateResearch() {
@@ -412,8 +588,12 @@ function calculateAscension() {
             if (score >= 80) scoreDisplay.className = "text-2xl font-black text-emerald-400";
             else if (score >= 50) scoreDisplay.className = "text-2xl font-black text-amber-400";
             else scoreDisplay.className = "text-2xl font-black text-red-500";
+
+            saveProgress();
         }
 
+        // Init Flow
+        loadProgress();
         calculateTokens();
         calculateAscension();
         updateResearch();
