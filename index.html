@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WildPrison - Gang Optimization Tool v2.0</title>
+    <title>WildPrison - Gang Optimization Tool v3.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans min-h-screen p-4 md:p-8">
-    <div class="max-w-6xl mx-auto space-y-6">
+    <div class="max-w-7xl mx-auto space-y-6">
         
         <!-- Header -->
         <header class="border-b border-slate-800 pb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
                 <h1 class="text-3xl font-extrabold text-amber-400">WildPrison Gang Optimizer</h1>
-                <p class="text-slate-400 text-sm mt-1">Full-featured Token Sacrifice calculator, Research tracker, and Audit engine.</p>
+                <p class="text-slate-400 text-sm mt-1">Token Sacrifice calculator, Research tracker, and Ascension priority engine.</p>
             </div>
             <div class="bg-slate-800 border border-slate-700 px-4 py-2 rounded-lg text-right">
                 <span class="text-xs text-slate-400 uppercase block font-semibold">Research Audit Score</span>
@@ -21,7 +21,7 @@
             </div>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             
             <!-- COLUMN 1: Token Sacrifice Calculator -->
             <section class="bg-slate-800 border border-slate-700 rounded-xl p-5 shadow-lg space-y-4">
@@ -67,7 +67,6 @@
                         </div>
                     </div>
 
-                    <!-- Diminishing Returns Power of 10 Indicator -->
                     <div id="powerOfTenNotice" class="p-2 rounded text-xs bg-slate-800 border border-slate-700 text-slate-300">
                         ⚡ <strong>Power of 10 Rules:</strong> Sacrifice bonuses diminish at every power of 10 (1SP, 10SP, 100SP...).
                     </div>
@@ -78,24 +77,63 @@
                 </div>
             </section>
 
-            <!-- COLUMN 2: Full Research Order Tracker -->
+            <!-- COLUMN 2: Ascension Upgrade Advisor -->
+            <section class="bg-slate-800 border border-slate-700 rounded-xl p-5 shadow-lg space-y-4">
+                <div class="flex items-center space-x-2 border-b border-slate-700 pb-2">
+                    <span class="text-2xl">🚀</span>
+                    <h2 class="text-xl font-bold text-slate-200">Ascension Advisor</h2>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div>
+                        <label class="block font-semibold text-slate-400 uppercase mb-1">Money</label>
+                        <input type="number" id="asc_money" value="0" min="0" max="200" oninput="calculateAscension()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white focus:outline-none focus:border-amber-400">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-400 uppercase mb-1">Tokens</label>
+                        <input type="number" id="asc_tokens" value="0" min="0" max="200" oninput="calculateAscension()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white focus:outline-none focus:border-amber-400">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-400 uppercase mb-1">Pet XP</label>
+                        <input type="number" id="asc_pet_xp" value="0" min="0" max="200" oninput="calculateAscension()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white focus:outline-none focus:border-amber-400">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-400 uppercase mb-1">Armor XP</label>
+                        <input type="number" id="asc_armor_xp" value="0" min="0" max="200" oninput="calculateAscension()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white focus:outline-none focus:border-amber-400">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block font-semibold text-slate-400 uppercase mb-1">Enchant Chance</label>
+                        <input type="number" id="asc_enchant_chance" value="0" min="0" max="200" oninput="calculateAscension()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white focus:outline-none focus:border-amber-400">
+                    </div>
+                </div>
+
+                <!-- Recommendation Output -->
+                <div class="bg-slate-900/80 border border-slate-700/50 rounded-lg p-3 space-y-2">
+                    <div class="text-xs font-bold uppercase text-amber-400">Recommended Next Step</div>
+                    <div id="ascensionRecommendation" class="text-xs font-semibold text-emerald-300">
+                        Balance Money, Pet XP, and Armor XP to level 20.
+                    </div>
+                    <div id="ascensionDetail" class="text-[11px] text-slate-400 leading-tight">
+                        Officer Priority: Focus on early core balance before pushing tokens.
+                    </div>
+                </div>
+            </section>
+
+            <!-- COLUMN 3: Full Research Order Tracker -->
             <section class="bg-slate-800 border border-slate-700 rounded-xl p-5 shadow-lg space-y-4">
                 <div class="flex items-center space-x-2 border-b border-slate-700 pb-2">
                     <span class="text-2xl">🔬</span>
                     <h2 class="text-xl font-bold text-slate-200">Research Tracker</h2>
                 </div>
 
-                <!-- Priority Recommendation Box -->
                 <div class="bg-amber-950/40 border border-amber-800/60 rounded-lg p-3">
-                    <div class="text-xs font-bold uppercase text-amber-400">Next Priority Recommendation</div>
-                    <div id="nextPriorityText" class="text-sm font-semibold text-slate-100 mt-1">
+                    <div class="text-xs font-bold uppercase text-amber-400">Next Research Priority</div>
+                    <div id="nextPriorityText" class="text-xs font-semibold text-slate-100 mt-1">
                         Start: Token Boost
                     </div>
                 </div>
 
-                <!-- Checkboxes organized by phase -->
-                <div class="space-y-3 text-xs overflow-y-auto max-h-[420px] pr-1">
-                    
+                <div class="space-y-3 text-xs overflow-y-auto max-h-[360px] pr-1">
                     <div class="space-y-1">
                         <div class="font-bold text-sky-400 uppercase tracking-wider">1. Starter Projects</div>
                         <label class="flex items-center space-x-2 bg-slate-900/60 p-2 rounded hover:bg-slate-900 cursor-pointer">
@@ -188,18 +226,17 @@
                         <div class="font-bold text-red-500 uppercase tracking-wider">❌ Avoid / Do Last</div>
                         <label class="flex items-center space-x-2 bg-slate-900/60 p-2 rounded hover:bg-slate-900 cursor-pointer">
                             <input type="checkbox" id="res_chain_reaction" onchange="updateResearch()" class="rounded text-red-500 focus:ring-0">
-                            <span class="text-red-300">Chain Reaction (Sucks!)</span>
+                            <span class="text-red-300">Chain Reaction</span>
                         </label>
                         <label class="flex items-center space-x-2 bg-slate-900/60 p-2 rounded hover:bg-slate-900 cursor-pointer">
                             <input type="checkbox" id="res_bad_fillers" onchange="updateResearch()" class="rounded text-red-500 focus:ring-0">
                             <span class="text-red-300">Street Rep 2 & Fast Learner</span>
                         </label>
                     </div>
-
                 </div>
             </section>
 
-            <!-- COLUMN 3: Live Tier List View -->
+            <!-- COLUMN 4: Interactive Tier List -->
             <section class="bg-slate-800 border border-slate-700 rounded-xl p-5 shadow-lg space-y-4">
                 <div class="flex items-center space-x-2 border-b border-slate-700 pb-2">
                     <span class="text-2xl">📊</span>
@@ -207,7 +244,6 @@
                 </div>
 
                 <div class="space-y-3 text-xs">
-                    
                     <div class="bg-slate-900/80 p-3 rounded-lg border-l-4 border-emerald-500">
                         <div class="font-bold text-emerald-400 uppercase mb-1">Tier A (Must Have)</div>
                         <p class="text-slate-300">XP, Sacrificial, Enchant Chance</p>
@@ -232,7 +268,6 @@
                         <div class="font-bold text-red-400 uppercase mb-1">Chain Reaction Tier (Avoid)</div>
                         <p class="text-slate-300">Chain Reaction, Street Rep 2</p>
                     </div>
-
                 </div>
             </section>
 
@@ -257,12 +292,12 @@
                 xpRatio = 0.5;
             } else if (total <= 100) {
                 ratioLabel = "1 SP – 100 SP (3:1 Ratio)";
-                moneyRatio = 0.75; // 3 parts money out of 4
-                xpRatio = 0.25;    // 1 part XP out of 4
+                moneyRatio = 0.75;
+                xpRatio = 0.25;
             } else {
                 ratioLabel = "Above 100 SP (10:1 Ratio)";
-                moneyRatio = 10 / 11; // 10 parts money out of 11 (~90.9%)
-                xpRatio = 1 / 11;    // 1 part XP out of 11 (~9.1%)
+                moneyRatio = 10 / 11;
+                xpRatio = 1 / 11;
             }
 
             document.getElementById('targetRatioDisplay').innerText = ratioLabel;
@@ -293,8 +328,50 @@
             }
         }
 
+        function calculateAscension() {
+            const m = parseInt(document.getElementById('asc_money').value) || 0;
+            const t = parseInt(document.getElementById('asc_tokens').value) || 0;
+            const px = parseInt(document.getElementById('asc_pet_xp').value) || 0;
+            const ax = parseInt(document.getElementById('asc_armor_xp').value) || 0;
+            const ec = parseInt(document.getElementById('asc_enchant_chance').value) || 0;
+
+            const recBox = document.getElementById('ascensionRecommendation');
+            const detailBox = document.getElementById('ascensionDetail');
+
+            if (m < 20 || px < 20 || ax < 20) {
+                recBox.innerText = "Phase 1: Balance Money, Pet XP, Armor XP -> Level 20";
+                detailBox.innerText = `Focus on lowest: Money (${m}/20), Pet XP (${px}/20), Armor XP (${ax}/20).`;
+            } else if (t < 50 || px < 50 || ax < 50) {
+                recBox.innerText = "Phase 2: Balance Tokens, Pet XP, Armor XP -> Level 50";
+                detailBox.innerText = `Focus on lowest: Tokens (${t}/50), Pet XP (${px}/50), Armor XP (${ax}/50).`;
+            } else if (m < 30) {
+                recBox.innerText = "Phase 3: Upgrade Money -> Level 30";
+                detailBox.innerText = `Push Money from level ${m} to 30.`;
+            } else if (px < 100 || ax < 100) {
+                recBox.innerText = "Phase 4: Balance Pet XP & Armor XP -> Level 100";
+                detailBox.innerText = `Focus on lowest: Pet XP (${px}/100), Armor XP (${ax}/100).`;
+            } else if (ec < 100) {
+                recBox.innerText = "Phase 5: Rush Enchant Chance -> Level 100";
+                detailBox.innerText = `Push Enchant Chance from ${ec}/100 (Do this before pushing Tokens to 100).`;
+            } else if (t < 100) {
+                recBox.innerText = "Phase 6: Upgrade Tokens -> Level 100";
+                detailBox.innerText = `Push Tokens from ${t}/100 now that Enchant Chance is maxed.`;
+            } else if (m < 50) {
+                recBox.innerText = "Phase 7: Upgrade Money -> Level 50";
+                detailBox.innerText = `Push Money from level ${m} to 50.`;
+            } else if (t < 150) {
+                recBox.innerText = "Phase 8: Push Tokens -> Level 150/200";
+                detailBox.innerText = `Tokens currently ${t}. Push towards 150+ (optional/debatable late-game tier).`;
+            } else if (m < 100) {
+                recBox.innerText = "Phase 9: Max Money -> Level 100";
+                detailBox.innerText = `Final push: Upgrade Money from level ${m} to 100.`;
+            } else {
+                recBox.innerText = "✅ Ascension Milestones Maxed!";
+                detailBox.innerText = "All recommended GamerFlo25 Ascension priorities are complete!";
+            }
+        }
+
         function updateResearch() {
-            // Priority Tracker Order
             const steps = [
                 { id: 'res_token_boost', name: 'Start: Token Boost' },
                 { id: 'res_money_boost', name: 'Start: Money Boost' },
@@ -315,7 +392,7 @@
                 { id: 'res_fillers', name: 'Fillers: Street Rep 1, Geology 2, Overtime' }
             ];
 
-            let nextStep = "All essential research complete! Save remaining Blueprints.";
+            let nextStep = "All essential research complete!";
             for (let step of steps) {
                 if (!document.getElementById(step.id).checked) {
                     nextStep = step.name;
@@ -324,16 +401,9 @@
             }
             document.getElementById('nextPriorityText').innerText = nextStep;
 
-            // Audit Score Calculation
             let score = 100;
-            const sac4Checked = document.getElementById('res_sac_4').checked;
-            const sac5Checked = document.getElementById('res_sac_5').checked;
-            const chainReactionChecked = document.getElementById('res_chain_reaction').checked;
-            const badFillersChecked = document.getElementById('res_bad_fillers').checked;
-
-            if (chainReactionChecked) score -= 30; // Heavy penalty for Chain Reaction
-            if (badFillersChecked) score -= 20;   // Penalty for useless fillers
-            if (!sac4Checked && (document.getElementById('res_tamer').checked || document.getElementById('res_luckier').checked)) score -= 20;
+            if (document.getElementById('res_chain_reaction').checked) score -= 30;
+            if (document.getElementById('res_bad_fillers').checked) score -= 20;
 
             score = Math.max(0, score);
             const scoreDisplay = document.getElementById('auditScoreDisplay');
@@ -344,8 +414,8 @@
             else scoreDisplay.className = "text-2xl font-black text-red-500";
         }
 
-        // Initialize on load
         calculateTokens();
+        calculateAscension();
         updateResearch();
     </script>
 </body>
