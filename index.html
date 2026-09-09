@@ -328,7 +328,7 @@
             }
         }
 
-        function calculateAscension() {
+function calculateAscension() {
             const m = parseInt(document.getElementById('asc_money').value) || 0;
             const t = parseInt(document.getElementById('asc_tokens').value) || 0;
             const px = parseInt(document.getElementById('asc_pet_xp').value) || 0;
@@ -350,24 +350,24 @@
             } else if (px < 100 || ax < 100) {
                 recBox.innerText = "Phase 4: Balance Pet XP & Armor XP -> Level 100";
                 detailBox.innerText = `Focus on lowest: Pet XP (${px}/100), Armor XP (${ax}/100).`;
-            } else if (ec < 100) {
-                recBox.innerText = "Phase 5: Rush Enchant Chance -> Level 100";
-                detailBox.innerText = `Push Enchant Chance from ${ec}/100 (Do this before pushing Tokens to 100).`;
             } else if (t < 100) {
-                recBox.innerText = "Phase 6: Upgrade Tokens -> Level 100";
-                detailBox.innerText = `Push Tokens from ${t}/100 now that Enchant Chance is maxed.`;
+                recBox.innerText = "Phase 5: Upgrade Tokens -> Level 100";
+                detailBox.innerText = `Push Tokens from ${t}/100 (Optional: Enchant Chance ${ec}/100 can be done before or alongside this).`;
+            } else if (ec < 100) {
+                recBox.innerText = "Phase 6: Upgrade Enchant Chance -> Level 100";
+                detailBox.innerText = `Push Enchant Chance from ${ec}/100 to 100.`;
             } else if (m < 50) {
                 recBox.innerText = "Phase 7: Upgrade Money -> Level 50";
                 detailBox.innerText = `Push Money from level ${m} to 50.`;
             } else if (t < 150) {
                 recBox.innerText = "Phase 8: Push Tokens -> Level 150/200";
-                detailBox.innerText = `Tokens currently ${t}. Push towards 150+ (optional/debatable late-game tier).`;
+                detailBox.innerText = `Tokens currently ${t}. Push towards 150+ (optional late-game tier).`;
             } else if (m < 100) {
                 recBox.innerText = "Phase 9: Max Money -> Level 100";
                 detailBox.innerText = `Final push: Upgrade Money from level ${m} to 100.`;
             } else {
                 recBox.innerText = "✅ Ascension Milestones Maxed!";
-                detailBox.innerText = "All recommended GamerFlo25 Ascension priorities are complete!";
+                detailBox.innerText = "All recommended Ascension priorities are complete!";
             }
         }
 
