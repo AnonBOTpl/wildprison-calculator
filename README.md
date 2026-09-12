@@ -19,11 +19,11 @@ All internal engine calculations normalize to the base unit **SP (Sacrifice Poin
 
 | Currency | Name | SP Equivalent |
 | :--- | :--- | :--- |
-| **QT** | Quadrillion | `0.000001 SP` |
-| **S** | Quintillion / S | `0.001 SP` |
-| **SP** | Sacrifice Points | `1.0 SP` (Base Unit) |
-| **O** | Octillion / O | `1,000 SP` |
-| **N** | Nonillion / N | `1,000,000 SP` |
+| **QT** | Quintillion | `0.000001 SP` |
+| **S** | Sextillion | `0.001 SP` |
+| **SP** | Septillion (Sacrifice Points) | `1.0 SP` (Base Unit) |
+| **O** | Octillion | `1,000 SP` |
+| **N** | Nonillion | `1,000,000 SP` |
 
 *The calculator automatically parses direct input suffixes (e.g., `10O` or `5S`) and adjusts the currency dropdown accordingly.*
 
@@ -32,10 +32,10 @@ All internal engine calculations normalize to the base unit **SP (Sacrifice Poin
 ### 2. 💎 Token Sacrifice Engine (Updated Ratio Rules)
 Sacrifice Points (SP) are calculated as the sum of sacrificed resources: $SP = Money + XP$. 
 
-Optimal allocation ratio (**Money Goal vs XP Goal**):
-* **Under 1 SP:** **1:1** Ratio (50% Money / 50% XP)
-* **1 SP to 100 SP:** **3:1** Ratio (75% Money / 25% XP)
-* **100 SP to 1,000 SP (1 O):** **10:1** Ratio (~90.9% Money / ~9.1% XP)
+Optimal allocation ratio (**Money Goal vs XP Goal**) — the ratio switches only **after** you exceed a threshold:
+* **Up to ~1 SP:** **1:1** Ratio (50% Money / 50% XP)
+* **After 1 SP (up to 100 SP):** **3:1** Ratio (75% Money / 25% XP)
+* **After 100 SP (up to 1,000 SP / 1 O):** **10:1** Ratio (~90.9% Money / ~9.1% XP)
 * **Above 1,000 SP (1 O):** Switch back to **1:1** Ratio (50% Money / 50% XP)
 
 ---
@@ -107,10 +107,10 @@ Hello! If you are an AI model continuing development on this project, adhere to 
 
 1. **Single-File SPA Structure:** Maintain the entire interface and logic inside `index.html`.
 2. **Persistence:** Ensure all input fields, currency selections, and checkboxes remain wired to `saveProgress()` and `loadProgress()`.
-3. **Sacrifice Ratios:**
-   * `< 1 SP`: 1:1
-   * `1 – 100 SP`: 3:1
-   * `100 – 1,000 SP (1 O)`: 10:1
+3. **Sacrifice Ratios** (thresholds are exclusive — the ratio changes only *after* you exceed them):
+   * `<= 1 SP`: 1:1
+   * `> 1 to 100 SP`: 3:1
+   * `> 100 to 1,000 SP (1 O)`: 10:1
    * `> 1,000 SP (> 1 O)`: 1:1 (per officer instructions).
 4. **Currency Multipliers:** Modify unit conversions exclusively inside the `CURRENCY_MULTIPLIERS` object.
 5. **UI Aesthetics:** Preserve the dark Tailwind CSS theme (`slate-900`, `amber-400`, `emerald-400`).
