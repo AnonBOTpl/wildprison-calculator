@@ -24,23 +24,10 @@
         /* ==== Firefox ==== */
         html { scrollbar-width: thin; scrollbar-color: rgba(113, 113, 123, 0.85) rgba(24, 24, 27, 0.35); }
 
-        /* ==== Tekstura dirt (64x64) - delikatny szum na calym tle ==== */
-        body::after {
-            content: "";
-            position: fixed;
-            inset: 0;
-            background-image: url('dirt.png');
-            background-repeat: repeat;
-            background-size: 64px 64px;
-            image-rendering: pixelated;
-            opacity: 0.08;
-            pointer-events: none;
-            z-index: 1;
-        }
     </style>
 </head>
 <body class="text-zinc-100 font-sans min-h-screen p-4 md:p-8" style="background-color: #18181b; background-image: linear-gradient(rgba(15,23,42,0.55), rgba(15,23,42,0.80)), url('background.webp'); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed;">
-    <div class="max-w-7xl mx-auto space-y-6 relative z-10">
+    <div class="max-w-7xl mx-auto space-y-6">
         
         <!-- Header -->
         <header class="border-b border-zinc-800 pb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
