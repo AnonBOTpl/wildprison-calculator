@@ -1,4 +1,4 @@
-# WildPrison - Gang Optimization Tool v3.2 🚀
+# WildPrison - Gang Optimization Tool v3.3 🚀
 
 A professional calculator and tactical dashboard designed for **WildPrison** (Minecraft OP Prison) players. The application optimizes **Token Sacrifice** management, **Ascension** upgrade prioritization, and **Research** tree tracking.
 
