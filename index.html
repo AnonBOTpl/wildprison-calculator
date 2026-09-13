@@ -5,22 +5,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WildPrison - Gang Optimization Tool v3.2</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* ==== Ciemny, custom pasek przewijania (Chrome / Edge / Safari) ==== */
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track {
+            background: rgba(24, 24, 27, 0.35);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: rgba(113, 113, 123, 0.85);
+            border-radius: 9999px;
+            border: 2px solid transparent;
+            background-clip: content-box;
+        }
+        ::-webkit-scrollbar-thumb:hover { background-color: rgba(255, 170, 0, 0.8); }
+        ::-webkit-scrollbar-corner { background: transparent; }
+
+        /* ==== Firefox ==== */
+        html { scrollbar-width: thin; scrollbar-color: rgba(113, 113, 123, 0.85) rgba(24, 24, 27, 0.35); }
+
+        /* ==== Tekstura dirt (64x64) - delikatny szum na calym tle ==== */
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image: url('dirt.png');
+            background-repeat: repeat;
+            background-size: 64px 64px;
+            image-rendering: pixelated;
+            opacity: 0.08;
+            pointer-events: none;
+            z-index: 1;
+        }
+    </style>
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans min-h-screen p-4 md:p-8">
-    <div class="max-w-7xl mx-auto space-y-6">
+<body class="text-zinc-100 font-sans min-h-screen p-4 md:p-8" style="background-color: #18181b; background-image: linear-gradient(rgba(15,23,42,0.55), rgba(15,23,42,0.80)), url('background.webp'); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed;">
+    <div class="max-w-7xl mx-auto space-y-6 relative z-10">
         
         <!-- Header -->
-        <header class="border-b border-slate-800 pb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div>
-                <h1 class="text-3xl font-extrabold text-amber-400">WildPrison Gang Optimizer</h1>
-                <p class="text-slate-400 text-sm mt-1">Token Sacrifice calculator, Research tracker, and Ascension priority engine.</p>
+        <header class="border-b border-zinc-800 pb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div class="flex items-center gap-3">
+                <img src="wild.webp" alt="WildNetwork" class="w-11 h-11 object-contain drop-shadow-[0_0_10px_rgba(255,170,0,0.35)]">
+                <div>
+                    <h1 class="text-3xl font-extrabold text-[#FFAA00]">WildPrison Gang Optimizer</h1>
+                    <p class="text-zinc-400 text-sm mt-1">Token Sacrifice calculator, Research tracker, and Ascension priority engine.</p>
+                </div>
             </div>
             <div class="flex items-center gap-3">
                 <button onclick="resetAllProgress()" class="text-xs bg-red-950/60 border border-red-800/80 hover:bg-red-900 text-red-300 px-3 py-2 rounded-lg font-medium transition flex items-center gap-1.5 shadow-sm">
                     <span>🔄</span> Reset Progress
                 </button>
-                <div class="bg-slate-800 border border-slate-700 px-4 py-2 rounded-lg text-right">
-                    <span class="text-xs text-slate-400 uppercase block font-semibold">Research Audit Score</span>
+                <div class="bg-zinc-800 border border-zinc-700 px-4 py-2 rounded-lg text-right">
+                    <span class="text-xs text-zinc-400 uppercase block font-semibold">Research Audit Score</span>
                     <span id="auditScoreDisplay" class="text-2xl font-black text-emerald-400">100%</span>
                 </div>
             </div>
@@ -29,18 +65,18 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             
             <!-- COLUMN 1: Token Sacrifice Calculator -->
-            <section class="bg-slate-800 border border-slate-700 rounded-xl p-5 shadow-lg space-y-4">
-                <div class="flex items-center space-x-2 border-b border-slate-700 pb-2">
+            <section class="bg-zinc-800/60 backdrop-blur-md border border-zinc-700/70 rounded-xl p-5 shadow-lg space-y-4">
+                <div class="flex items-center space-x-2 border-b border-zinc-700 pb-2">
                     <span class="text-2xl">💎</span>
-                    <h2 class="text-xl font-bold text-slate-200">Token Sacrifice</h2>
+                    <h2 class="text-xl font-bold text-zinc-200">Token Sacrifice</h2>
                 </div>
 
                 <div class="space-y-3">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Money Sacrificed</label>
+                        <label class="block text-xs font-semibold text-zinc-400 uppercase mb-1">Money Sacrificed</label>
                         <div class="flex gap-2">
-                            <input type="text" id="moneyInput" value="0" oninput="calculateTokens()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-400 text-sm">
-                            <select id="moneyUnit" onchange="calculateTokens()" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-amber-400 font-bold text-xs focus:outline-none focus:border-amber-400">
+                            <input type="text" id="moneyInput" value="0" oninput="calculateTokens()" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#FFAA00] text-sm">
+                            <select id="moneyUnit" onchange="calculateTokens()" class="bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-2 text-[#FFAA00] font-bold text-xs focus:outline-none focus:border-[#FFAA00]">
                                 <option value="QT">QT</option>
                                 <option value="S">S</option>
                                 <option value="SP" selected>SP</option>
@@ -50,10 +86,10 @@
                         </div>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">XP Sacrificed</label>
+                        <label class="block text-xs font-semibold text-zinc-400 uppercase mb-1">XP Sacrificed</label>
                         <div class="flex gap-2">
-                            <input type="text" id="xpInput" value="0" oninput="calculateTokens()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-400 text-sm">
-                            <select id="xpUnit" onchange="calculateTokens()" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-amber-400 font-bold text-xs focus:outline-none focus:border-amber-400">
+                            <input type="text" id="xpInput" value="0" oninput="calculateTokens()" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#FFAA00] text-sm">
+                            <select id="xpUnit" onchange="calculateTokens()" class="bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-2 text-[#FFAA00] font-bold text-xs focus:outline-none focus:border-[#FFAA00]">
                                 <option value="QT">QT</option>
                                 <option value="S">S</option>
                                 <option value="SP" selected>SP</option>
@@ -64,35 +100,35 @@
                     </div>
                 </div>
 
-                <div class="bg-slate-900/80 border border-slate-700/50 rounded-lg p-4 space-y-3">
+                <div class="bg-zinc-900/80 border border-zinc-700/50 rounded-lg p-4 space-y-3">
                     <div class="flex justify-between items-center text-sm">
-                        <span class="text-slate-400">Total Sacrificed:</span>
-                        <span id="totalSpDisplay" class="font-bold text-amber-400">0.00 SP</span>
+                        <span class="text-zinc-400">Total Sacrificed:</span>
+                        <span id="totalSpDisplay" class="font-bold text-[#FFAA00]">0.00 SP</span>
                     </div>
                     <div class="flex justify-between items-center text-sm">
-                        <span class="text-slate-400">Current Strategy Tier:</span>
+                        <span class="text-zinc-400">Current Strategy Tier:</span>
                         <span id="targetRatioDisplay" class="font-semibold text-sky-400">Under 1 SP (1:1 Ratio)</span>
                     </div>
 
-                    <hr class="border-slate-800">
+                    <hr class="border-zinc-800">
 
                     <div>
-                        <div class="text-xs font-semibold uppercase text-slate-400 mb-2">Optimal Allocation Goal</div>
+                        <div class="text-xs font-semibold uppercase text-zinc-400 mb-2">Optimal Allocation Goal</div>
                         <div class="grid grid-cols-2 gap-2 text-sm">
-                            <div class="bg-slate-800 p-2 rounded text-center">
-                                <div class="text-xs text-slate-400">Money Goal</div>
+                            <div class="bg-zinc-800/75 p-2 rounded text-center">
+                                <div class="text-xs text-zinc-400">Money Goal</div>
                                 <div id="targetMoney" class="font-bold text-emerald-400">0.00 SP</div>
                             </div>
-                            <div class="bg-slate-800 p-2 rounded text-center">
-                                <div class="text-xs text-slate-400">XP Goal</div>
+                            <div class="bg-zinc-800/75 p-2 rounded text-center">
+                                <div class="text-xs text-zinc-400">XP Goal</div>
                                 <div id="targetXp" class="font-bold text-purple-400">0.00 SP</div>
                             </div>
                         </div>
                     </div>
 
-                    <div id="currencyGuide" class="p-2 rounded text-[11px] bg-slate-800/90 border border-slate-700 text-slate-300 space-y-1">
-                        <div class="font-bold text-amber-400 uppercase text-[10px]">Currency Units:</div>
-                        <div class="grid grid-cols-2 gap-x-2 gap-y-0.5 text-[10px] text-slate-400">
+                    <div id="currencyGuide" class="p-2 rounded text-[11px] bg-zinc-800/90 border border-zinc-700 text-zinc-300 space-y-1">
+                        <div class="font-bold text-[#FFAA00] uppercase text-[10px]">Currency Units:</div>
+                        <div class="grid grid-cols-2 gap-x-2 gap-y-0.5 text-[10px] text-zinc-400">
                             <span>1 QT = 0.000001 SP</span>
                             <span>1 S = 0.001 SP</span>
                             <span>1 SP = 1 SP</span>
@@ -108,10 +144,10 @@
             </section>
 
             <!-- COLUMN 2: Ascension Upgrade Advisor -->
-            <section class="bg-slate-800 border border-slate-700 rounded-xl p-5 shadow-lg space-y-4">
-                <div class="flex items-center space-x-2 border-b border-slate-700 pb-2">
+            <section class="bg-zinc-800/60 backdrop-blur-md border border-zinc-700/70 rounded-xl p-5 shadow-lg space-y-4">
+                <div class="flex items-center space-x-2 border-b border-zinc-700 pb-2">
                     <span class="text-2xl">🚀</span>
-                    <h2 class="text-xl font-bold text-slate-200">Ascension Advisor</h2>
+                    <h2 class="text-xl font-bold text-zinc-200">Ascension Advisor</h2>
                 </div>
 
                 <!-- Permanent Upgrade Warning -->
@@ -121,95 +157,95 @@
                 </div>
 
                 <!-- Overall Progress Visualizer -->
-                <div class="bg-slate-900/90 p-3 rounded-lg border border-slate-700/80 space-y-1.5">
+                <div class="bg-zinc-900/90 p-3 rounded-lg border border-zinc-700/80 space-y-1.5">
                     <div class="flex justify-between items-center text-xs">
-                        <span class="text-slate-400 uppercase font-semibold tracking-wider text-[10px]">Overall Ascension Progress</span>
-                        <span id="ascProgressPercent" class="text-amber-400 font-bold">0%</span>
+                        <span class="text-zinc-400 uppercase font-semibold tracking-wider text-[10px]">Overall Ascension Progress</span>
+                        <span id="ascProgressPercent" class="text-[#FFAA00] font-bold">0%</span>
                     </div>
-                    <div class="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden border border-slate-700">
-                        <div id="ascProgressBar" class="bg-gradient-to-r from-amber-500 via-sky-400 to-emerald-400 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    <div class="w-full bg-zinc-800 rounded-full h-2.5 overflow-hidden border border-zinc-700">
+                        <div id="ascProgressBar" class="bg-gradient-to-r from-[#E09000] via-sky-400 to-emerald-400 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
                     </div>
                 </div>
 
                 <!-- Input Fields with Mini-Bars -->
                 <div class="grid grid-cols-2 gap-2 text-xs">
                     <div>
-                        <div class="flex justify-between font-semibold text-slate-400 uppercase mb-1 text-[10px]">
+                        <div class="flex justify-between font-semibold text-zinc-400 uppercase mb-1 text-[10px]">
                             <span>Money</span>
-                            <span id="val_asc_money" class="text-slate-300">0/100</span>
+                            <span id="val_asc_money" class="text-zinc-300">0/100</span>
                         </div>
-                        <input type="number" id="asc_money" value="0" min="0" max="200" oninput="calculateAscension()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white focus:outline-none focus:border-amber-400">
-                        <div class="w-full bg-slate-900 rounded-full h-1 mt-1 overflow-hidden">
-                            <div id="bar_asc_money" class="bg-amber-400 h-1 rounded-full transition-all" style="width: 0%"></div>
+                        <input type="number" id="asc_money" value="0" min="0" max="200" oninput="calculateAscension()" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-1.5 text-white focus:outline-none focus:border-[#FFAA00]">
+                        <div class="w-full bg-zinc-900 rounded-full h-1 mt-1 overflow-hidden">
+                            <div id="bar_asc_money" class="bg-[#FFAA00] h-1 rounded-full transition-all" style="width: 0%"></div>
                         </div>
                     </div>
                     <div>
-                        <div class="flex justify-between font-semibold text-slate-400 uppercase mb-1 text-[10px]">
+                        <div class="flex justify-between font-semibold text-zinc-400 uppercase mb-1 text-[10px]">
                             <span>Tokens</span>
-                            <span id="val_asc_tokens" class="text-slate-300">0/150</span>
+                            <span id="val_asc_tokens" class="text-zinc-300">0/150</span>
                         </div>
-                        <input type="number" id="asc_tokens" value="0" min="0" max="200" oninput="calculateAscension()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white focus:outline-none focus:border-amber-400">
-                        <div class="w-full bg-slate-900 rounded-full h-1 mt-1 overflow-hidden">
+                        <input type="number" id="asc_tokens" value="0" min="0" max="200" oninput="calculateAscension()" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-1.5 text-white focus:outline-none focus:border-[#FFAA00]">
+                        <div class="w-full bg-zinc-900 rounded-full h-1 mt-1 overflow-hidden">
                             <div id="bar_asc_tokens" class="bg-sky-400 h-1 rounded-full transition-all" style="width: 0%"></div>
                         </div>
                     </div>
                     <div>
-                        <div class="flex justify-between font-semibold text-slate-400 uppercase mb-1 text-[10px]">
+                        <div class="flex justify-between font-semibold text-zinc-400 uppercase mb-1 text-[10px]">
                             <span>Pet XP</span>
-                            <span id="val_asc_pet_xp" class="text-slate-300">0/100</span>
+                            <span id="val_asc_pet_xp" class="text-zinc-300">0/100</span>
                         </div>
-                        <input type="number" id="asc_pet_xp" value="0" min="0" max="200" oninput="calculateAscension()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white focus:outline-none focus:border-amber-400">
-                        <div class="w-full bg-slate-900 rounded-full h-1 mt-1 overflow-hidden">
+                        <input type="number" id="asc_pet_xp" value="0" min="0" max="200" oninput="calculateAscension()" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-1.5 text-white focus:outline-none focus:border-[#FFAA00]">
+                        <div class="w-full bg-zinc-900 rounded-full h-1 mt-1 overflow-hidden">
                             <div id="bar_asc_pet_xp" class="bg-purple-400 h-1 rounded-full transition-all" style="width: 0%"></div>
                         </div>
                     </div>
                     <div>
-                        <div class="flex justify-between font-semibold text-slate-400 uppercase mb-1 text-[10px]">
+                        <div class="flex justify-between font-semibold text-zinc-400 uppercase mb-1 text-[10px]">
                             <span>Armor XP</span>
-                            <span id="val_asc_armor_xp" class="text-slate-300">0/100</span>
+                            <span id="val_asc_armor_xp" class="text-zinc-300">0/100</span>
                         </div>
-                        <input type="number" id="asc_armor_xp" value="0" min="0" max="200" oninput="calculateAscension()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white focus:outline-none focus:border-amber-400">
-                        <div class="w-full bg-slate-900 rounded-full h-1 mt-1 overflow-hidden">
+                        <input type="number" id="asc_armor_xp" value="0" min="0" max="200" oninput="calculateAscension()" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-1.5 text-white focus:outline-none focus:border-[#FFAA00]">
+                        <div class="w-full bg-zinc-900 rounded-full h-1 mt-1 overflow-hidden">
                             <div id="bar_asc_armor_xp" class="bg-indigo-400 h-1 rounded-full transition-all" style="width: 0%"></div>
                         </div>
                     </div>
                     <div class="col-span-2">
-                        <div class="flex justify-between font-semibold text-slate-400 uppercase mb-1 text-[10px]">
+                        <div class="flex justify-between font-semibold text-zinc-400 uppercase mb-1 text-[10px]">
                             <span>Enchant Chance</span>
-                            <span id="val_asc_enchant_chance" class="text-slate-300">0/100</span>
+                            <span id="val_asc_enchant_chance" class="text-zinc-300">0/100</span>
                         </div>
-                        <input type="number" id="asc_enchant_chance" value="0" min="0" max="200" oninput="calculateAscension()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white focus:outline-none focus:border-amber-400">
-                        <div class="w-full bg-slate-900 rounded-full h-1 mt-1 overflow-hidden">
+                        <input type="number" id="asc_enchant_chance" value="0" min="0" max="200" oninput="calculateAscension()" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-1.5 text-white focus:outline-none focus:border-[#FFAA00]">
+                        <div class="w-full bg-zinc-900 rounded-full h-1 mt-1 overflow-hidden">
                             <div id="bar_asc_enchant_chance" class="bg-emerald-400 h-1 rounded-full transition-all" style="width: 0%"></div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Recommendation Output -->
-                <div class="bg-slate-900/90 border border-slate-700/50 rounded-lg p-3 space-y-2">
+                <div class="bg-zinc-900/90 border border-zinc-700/50 rounded-lg p-3 space-y-2">
                     <div class="flex justify-between items-center">
-                        <span id="ascPhaseBadge" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">Phase 1 / 9</span>
-                        <span class="text-[10px] text-slate-400 uppercase font-semibold">Ascension Advisor</span>
+                        <span id="ascPhaseBadge" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#E09000]/20 text-[#FFC44D] border border-[#E09000]/30">Phase 1 / 9</span>
+                        <span class="text-[10px] text-zinc-400 uppercase font-semibold">Ascension Advisor</span>
                     </div>
                     <div id="ascensionRecommendation" class="text-xs font-bold text-emerald-300 leading-snug">
                         Phase 1: Balance Money, Pet XP, Armor XP -> Level 20
                     </div>
-                    <div id="ascensionDetail" class="text-[11px] text-slate-400 leading-relaxed">
+                    <div id="ascensionDetail" class="text-[11px] text-zinc-400 leading-relaxed">
                         Officer Priority: Focus on early core balance before pushing tokens.
                     </div>
                 </div>
             </section>
 
             <!-- COLUMN 3: Full Research Order Tracker -->
-            <section class="bg-slate-800 border border-slate-700 rounded-xl p-5 shadow-lg space-y-4">
-                <div class="flex items-center space-x-2 border-b border-slate-700 pb-2">
+            <section class="bg-zinc-800/60 backdrop-blur-md border border-zinc-700/70 rounded-xl p-5 shadow-lg space-y-4">
+                <div class="flex items-center space-x-2 border-b border-zinc-700 pb-2">
                     <span class="text-2xl">🔬</span>
-                    <h2 class="text-xl font-bold text-slate-200">Research Tracker</h2>
+                    <h2 class="text-xl font-bold text-zinc-200">Research Tracker</h2>
                 </div>
 
-                <div class="bg-amber-950/40 border border-amber-800/60 rounded-lg p-3">
-                    <div class="text-xs font-bold uppercase text-amber-400">Next Research Priority</div>
-                    <div id="nextPriorityText" class="text-xs font-semibold text-slate-100 mt-1">
+                <div class="bg-[#3B2900]/40 border border-[#7A5200]/60 rounded-lg p-3">
+                    <div class="text-xs font-bold uppercase text-[#FFAA00]">Next Research Priority</div>
+                    <div id="nextPriorityText" class="text-xs font-semibold text-zinc-100 mt-1">
                         Start: Token Boost
                     </div>
                 </div>
@@ -217,88 +253,88 @@
                 <div class="space-y-3 text-xs overflow-y-auto max-h-[360px] pr-1">
                     <div class="space-y-1">
                         <div class="font-bold text-sky-400 uppercase tracking-wider">1. Starter Projects</div>
-                        <label class="flex items-center space-x-2 bg-slate-900/60 p-2 rounded hover:bg-slate-900 cursor-pointer">
-                            <input type="checkbox" id="res_token_boost" onchange="updateResearch()" class="rounded text-amber-500 focus:ring-0">
+                        <label class="flex items-center space-x-2 bg-zinc-900/60 p-2 rounded hover:bg-zinc-900 cursor-pointer">
+                            <input type="checkbox" id="res_token_boost" onchange="updateResearch()" class="rounded text-[#E09000] focus:ring-0">
                             <span>Token Boost</span>
                         </label>
-                        <label class="flex items-center space-x-2 bg-slate-900/60 p-2 rounded hover:bg-slate-900 cursor-pointer">
-                            <input type="checkbox" id="res_money_boost" onchange="updateResearch()" class="rounded text-amber-500 focus:ring-0">
+                        <label class="flex items-center space-x-2 bg-zinc-900/60 p-2 rounded hover:bg-zinc-900 cursor-pointer">
+                            <input type="checkbox" id="res_money_boost" onchange="updateResearch()" class="rounded text-[#E09000] focus:ring-0">
                             <span>Money Boost</span>
                         </label>
-                        <label class="flex items-center space-x-2 bg-slate-900/60 p-2 rounded hover:bg-slate-900 cursor-pointer">
-                            <input type="checkbox" id="res_all_xps" onchange="updateResearch()" class="rounded text-amber-500 focus:ring-0">
+                        <label class="flex items-center space-x-2 bg-zinc-900/60 p-2 rounded hover:bg-zinc-900 cursor-pointer">
+                            <input type="checkbox" id="res_all_xps" onchange="updateResearch()" class="rounded text-[#E09000] focus:ring-0">
                             <span>All XP Boosts</span>
                         </label>
-                        <label class="flex items-center space-x-2 bg-slate-900/60 p-2 rounded hover:bg-slate-900 cursor-pointer">
-                            <input type="checkbox" id="res_noc_1" onchange="updateResearch()" class="rounded text-amber-500 focus:ring-0">
+                        <label class="flex items-center space-x-2 bg-zinc-900/60 p-2 rounded hover:bg-zinc-900 cursor-pointer">
+                            <input type="checkbox" id="res_noc_1" onchange="updateResearch()" class="rounded text-[#E09000] focus:ring-0">
                             <span>Nocturnal 1</span>
                         </label>
                     </div>
 
                     <div class="space-y-1">
                         <div class="font-bold text-emerald-400 uppercase tracking-wider">2. Sacrificial Rush</div>
-                        <label class="flex items-center space-x-2 bg-slate-900/60 p-2 rounded hover:bg-slate-900 cursor-pointer">
-                            <input type="checkbox" id="res_sac_4" onchange="updateResearch()" class="rounded text-amber-500 focus:ring-0">
+                        <label class="flex items-center space-x-2 bg-zinc-900/60 p-2 rounded hover:bg-zinc-900 cursor-pointer">
+                            <input type="checkbox" id="res_sac_4" onchange="updateResearch()" class="rounded text-[#E09000] focus:ring-0">
                             <span>Sacrificial Level 4</span>
                         </label>
-                        <label class="flex items-center space-x-2 bg-slate-900/60 p-2 rounded hover:bg-slate-900 cursor-pointer">
-                            <input type="checkbox" id="res_sac_5" onchange="updateResearch()" class="rounded text-amber-500 focus:ring-0">
+                        <label class="flex items-center space-x-2 bg-zinc-900/60 p-2 rounded hover:bg-zinc-900 cursor-pointer">
+                            <input type="checkbox" id="res_sac_5" onchange="updateResearch()" class="rounded text-[#E09000] focus:ring-0">
                             <span>Sacrificial Level 5 (Max)</span>
                         </label>
                     </div>
 
                     <div class="space-y-1">
                         <div class="font-bold text-purple-400 uppercase tracking-wider">3. Main Currency Boosts</div>
-                        <label class="flex items-center space-x-2 bg-slate-900/60 p-2 rounded hover:bg-slate-900 cursor-pointer">
-                            <input type="checkbox" id="res_noc_2_3" onchange="updateResearch()" class="rounded text-amber-500 focus:ring-0">
+                        <label class="flex items-center space-x-2 bg-zinc-900/60 p-2 rounded hover:bg-zinc-900 cursor-pointer">
+                            <input type="checkbox" id="res_noc_2_3" onchange="updateResearch()" class="rounded text-[#E09000] focus:ring-0">
                             <span>Nocturnal 2 & 3</span>
                         </label>
-                        <label class="flex items-center space-x-2 bg-slate-900/60 p-2 rounded hover:bg-slate-900 cursor-pointer">
-                            <input type="checkbox" id="res_resonance" onchange="updateResearch()" class="rounded text-amber-500 focus:ring-0">
+                        <label class="flex items-center space-x-2 bg-zinc-900/60 p-2 rounded hover:bg-zinc-900 cursor-pointer">
+                            <input type="checkbox" id="res_resonance" onchange="updateResearch()" class="rounded text-[#E09000] focus:ring-0">
                             <span>Resonance</span>
                         </label>
-                        <label class="flex items-center space-x-2 bg-slate-900/60 p-2 rounded hover:bg-slate-900 cursor-pointer">
-                            <input type="checkbox" id="res_geology" onchange="updateResearch()" class="rounded text-amber-500 focus:ring-0">
+                        <label class="flex items-center space-x-2 bg-zinc-900/60 p-2 rounded hover:bg-zinc-900 cursor-pointer">
+                            <input type="checkbox" id="res_geology" onchange="updateResearch()" class="rounded text-[#E09000] focus:ring-0">
                             <span>Geology 1</span>
                         </label>
-                        <label class="flex items-center space-x-2 bg-slate-900/60 p-2 rounded hover:bg-slate-900 cursor-pointer">
-                            <input type="checkbox" id="res_enchant_chance" onchange="updateResearch()" class="rounded text-amber-500 focus:ring-0">
+                        <label class="flex items-center space-x-2 bg-zinc-900/60 p-2 rounded hover:bg-zinc-900 cursor-pointer">
+                            <input type="checkbox" id="res_enchant_chance" onchange="updateResearch()" class="rounded text-[#E09000] focus:ring-0">
                             <span>Enchant Chance</span>
                         </label>
-                        <label class="flex items-center space-x-2 bg-slate-900/60 p-2 rounded hover:bg-slate-900 cursor-pointer">
-                            <input type="checkbox" id="res_synergy" onchange="updateResearch()" class="rounded text-amber-500 focus:ring-0">
+                        <label class="flex items-center space-x-2 bg-zinc-900/60 p-2 rounded hover:bg-zinc-900 cursor-pointer">
+                            <input type="checkbox" id="res_synergy" onchange="updateResearch()" class="rounded text-[#E09000] focus:ring-0">
                             <span>Synergy 1 & 2</span>
                         </label>
-                        <label class="flex items-center space-x-2 bg-slate-900/60 p-2 rounded hover:bg-slate-900 cursor-pointer">
-                            <input type="checkbox" id="res_attach_mastery" onchange="updateResearch()" class="rounded text-amber-500 focus:ring-0">
+                        <label class="flex items-center space-x-2 bg-zinc-900/60 p-2 rounded hover:bg-zinc-900 cursor-pointer">
+                            <input type="checkbox" id="res_attach_mastery" onchange="updateResearch()" class="rounded text-[#E09000] focus:ring-0">
                             <span>Attachment Mastery</span>
                         </label>
                     </div>
 
                     <div class="space-y-1">
-                        <div class="font-bold text-slate-400 uppercase tracking-wider">4. Utilities</div>
-                        <label class="flex items-center space-x-2 bg-slate-900/60 p-2 rounded hover:bg-slate-900 cursor-pointer">
-                            <input type="checkbox" id="res_tamer" onchange="updateResearch()" class="rounded text-amber-500 focus:ring-0">
+                        <div class="font-bold text-zinc-400 uppercase tracking-wider">4. Utilities</div>
+                        <label class="flex items-center space-x-2 bg-zinc-900/60 p-2 rounded hover:bg-zinc-900 cursor-pointer">
+                            <input type="checkbox" id="res_tamer" onchange="updateResearch()" class="rounded text-[#E09000] focus:ring-0">
                             <span>Tamer 1 & 2</span>
                         </label>
-                        <label class="flex items-center space-x-2 bg-slate-900/60 p-2 rounded hover:bg-slate-900 cursor-pointer">
-                            <input type="checkbox" id="res_knowledgeable" onchange="updateResearch()" class="rounded text-amber-500 focus:ring-0">
+                        <label class="flex items-center space-x-2 bg-zinc-900/60 p-2 rounded hover:bg-zinc-900 cursor-pointer">
+                            <input type="checkbox" id="res_knowledgeable" onchange="updateResearch()" class="rounded text-[#E09000] focus:ring-0">
                             <span>Knowledgeable 1 & 2</span>
                         </label>
-                        <label class="flex items-center space-x-2 bg-slate-900/60 p-2 rounded hover:bg-slate-900 cursor-pointer">
-                            <input type="checkbox" id="res_sac_2" onchange="updateResearch()" class="rounded text-amber-500 focus:ring-0">
+                        <label class="flex items-center space-x-2 bg-zinc-900/60 p-2 rounded hover:bg-zinc-900 cursor-pointer">
+                            <input type="checkbox" id="res_sac_2" onchange="updateResearch()" class="rounded text-[#E09000] focus:ring-0">
                             <span>Sacrificial 2</span>
                         </label>
                     </div>
 
                     <div class="space-y-1">
-                        <div class="font-bold text-amber-500 uppercase tracking-wider">5. Niche / Fillers</div>
-                        <label class="flex items-center space-x-2 bg-slate-900/60 p-2 rounded hover:bg-slate-900 cursor-pointer">
-                            <input type="checkbox" id="res_luckier" onchange="updateResearch()" class="rounded text-amber-500 focus:ring-0">
+                        <div class="font-bold text-[#E09000] uppercase tracking-wider">5. Niche / Fillers</div>
+                        <label class="flex items-center space-x-2 bg-zinc-900/60 p-2 rounded hover:bg-zinc-900 cursor-pointer">
+                            <input type="checkbox" id="res_luckier" onchange="updateResearch()" class="rounded text-[#E09000] focus:ring-0">
                             <span>Luckier & Dual Offering</span>
                         </label>
-                        <label class="flex items-center space-x-2 bg-slate-900/60 p-2 rounded hover:bg-slate-900 cursor-pointer">
-                            <input type="checkbox" id="res_fillers" onchange="updateResearch()" class="rounded text-amber-500 focus:ring-0">
+                        <label class="flex items-center space-x-2 bg-zinc-900/60 p-2 rounded hover:bg-zinc-900 cursor-pointer">
+                            <input type="checkbox" id="res_fillers" onchange="updateResearch()" class="rounded text-[#E09000] focus:ring-0">
                             <span>Street Rep 1, Geology 2, Overtime</span>
                         </label>
                     </div>
@@ -324,36 +360,36 @@
             </section>
 
             <!-- COLUMN 4: Interactive Tier List -->
-            <section class="bg-slate-800 border border-slate-700 rounded-xl p-5 shadow-lg space-y-4">
-                <div class="flex items-center space-x-2 border-b border-slate-700 pb-2">
+            <section class="bg-zinc-800/60 backdrop-blur-md border border-zinc-700/70 rounded-xl p-5 shadow-lg space-y-4">
+                <div class="flex items-center space-x-2 border-b border-zinc-700 pb-2">
                     <span class="text-2xl">📊</span>
-                    <h2 class="text-xl font-bold text-slate-200">Interactive Tier List</h2>
+                    <h2 class="text-xl font-bold text-zinc-200">Interactive Tier List</h2>
                 </div>
 
                 <div class="space-y-3 text-xs">
-                    <div class="bg-slate-900/80 p-3 rounded-lg border-l-4 border-emerald-500">
+                    <div class="bg-zinc-900/80 p-3 rounded-lg border-l-4 border-emerald-500">
                         <div class="font-bold text-emerald-400 uppercase mb-1">Tier A (Must Have)</div>
-                        <p class="text-slate-300">XP, Sacrificial, Enchant Chance</p>
+                        <p class="text-zinc-300">XP, Sacrificial, Enchant Chance</p>
                     </div>
 
-                    <div class="bg-slate-900/80 p-3 rounded-lg border-l-4 border-sky-500">
+                    <div class="bg-zinc-900/80 p-3 rounded-lg border-l-4 border-sky-500">
                         <div class="font-bold text-sky-400 uppercase mb-1">Tier B (Main Boosts)</div>
-                        <p class="text-slate-300">Starter Currency Boosts, Nocturnal, Synergy, Resonance, Geology, Attach Mastery</p>
+                        <p class="text-zinc-300">Starter Currency Boosts, Nocturnal, Synergy, Resonance, Geology, Attach Mastery</p>
                     </div>
 
-                    <div class="bg-slate-900/80 p-3 rounded-lg border-l-4 border-yellow-500">
+                    <div class="bg-zinc-900/80 p-3 rounded-lg border-l-4 border-yellow-500">
                         <div class="font-bold text-yellow-400 uppercase mb-1">Tier C (Utilities)</div>
-                        <p class="text-slate-300">Tamer, Knowledgeable, Luckier, Dual Offering</p>
+                        <p class="text-zinc-300">Tamer, Knowledgeable, Luckier, Dual Offering</p>
                     </div>
 
-                    <div class="bg-slate-900/80 p-3 rounded-lg border-l-4 border-orange-500">
+                    <div class="bg-zinc-900/80 p-3 rounded-lg border-l-4 border-orange-500">
                         <div class="font-bold text-orange-400 uppercase mb-1">Tier D (Niche / Weak)</div>
-                        <p class="text-slate-300">Street Rep 1, Geology 2, Overtime, Fast Learner</p>
+                        <p class="text-zinc-300">Street Rep 1, Geology 2, Overtime, Fast Learner</p>
                     </div>
 
-                    <div class="bg-slate-900/80 p-3 rounded-lg border-l-4 border-red-500">
+                    <div class="bg-zinc-900/80 p-3 rounded-lg border-l-4 border-red-500">
                         <div class="font-bold text-red-400 uppercase mb-1">Chain Reaction Tier (Avoid)</div>
-                        <p class="text-slate-300">Chain Reaction, Street Rep 2</p>
+                        <p class="text-zinc-300">Chain Reaction, Street Rep 2</p>
                     </div>
                 </div>
             </section>
@@ -507,18 +543,18 @@
             const diffMoneySp = moneySp - targetMoneySp;
 
             if (totalSp === 0) {
-                statusDiv.className = "p-2.5 rounded-lg text-xs font-medium bg-slate-800 text-slate-400 border border-slate-700";
+                statusDiv.className = "p-2.5 rounded-lg text-xs font-medium bg-zinc-800 text-zinc-400 border border-zinc-700";
                 statusDiv.innerText = "Enter your current tokens to audit allocation.";
             } else if (Math.abs(diffMoneySp) < (totalSp * 0.05)) {
                 statusDiv.className = "p-2.5 rounded-lg text-xs font-medium bg-emerald-950/60 border border-emerald-800 text-emerald-300";
                 statusDiv.innerHTML = "✅ <strong>Optimal Split:</strong> Your Token Sacrifice allocation is perfectly balanced!";
             } else if (diffMoneySp < 0) {
                 const deficitSp = Math.abs(diffMoneySp);
-                statusDiv.className = "p-2.5 rounded-lg text-xs font-medium bg-amber-950/60 border border-amber-800 text-amber-300";
+                statusDiv.className = "p-2.5 rounded-lg text-xs font-medium bg-[#3B2900]/60 border border-[#7A5200] text-[#FFC44D]";
                 statusDiv.innerHTML = `⚠️ <strong>Over-invested in XP:</strong> Put your next <strong>${formatSpToBestUnit(deficitSp)}</strong> strictly into <strong>Money</strong>.`;
             } else {
                 const deficitSp = Math.abs(diffMoneySp);
-                statusDiv.className = "p-2.5 rounded-lg text-xs font-medium bg-amber-950/60 border border-amber-800 text-amber-300";
+                statusDiv.className = "p-2.5 rounded-lg text-xs font-medium bg-[#3B2900]/60 border border-[#7A5200] text-[#FFC44D]";
                 statusDiv.innerHTML = `⚠️ <strong>Over-invested in Money:</strong> Put your next <strong>${formatSpToBestUnit(deficitSp)}</strong> strictly into <strong>XP</strong>.`;
             }
 
@@ -665,7 +701,7 @@
             scoreDisplay.innerText = score + "%";
             
             if (score >= 80) scoreDisplay.className = "text-2xl font-black text-emerald-400";
-            else if (score >= 50) scoreDisplay.className = "text-2xl font-black text-amber-400";
+            else if (score >= 50) scoreDisplay.className = "text-2xl font-black text-[#FFAA00]";
             else scoreDisplay.className = "text-2xl font-black text-red-500";
 
             saveProgress();
