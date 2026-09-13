@@ -2,7 +2,7 @@
 
 A professional calculator and tactical dashboard designed for **WildPrison** (Minecraft OP Prison) players. The application optimizes **Token Sacrifice** management, **Ascension** upgrade prioritization, and **Research** tree tracking.
 
-The application is delivered as a Single Page Application (SPA) inside `index.html` and relies on Tailwind CSS and browser `LocalStorage`.
+The application is delivered as a static Single Page Application (SPA) built around `index.html` and two local image assets. It relies on Tailwind CSS and browser `LocalStorage`, and is hosted on GitHub Pages: https://anonbotpl.github.io/wildprison-calculator/
 
 ---
 
@@ -83,15 +83,24 @@ The research module includes an account audit score engine (**Research Audit Sco
 
 ## 💻 TECHNICAL ARCHITECTURE & CODE
 
-The application is fully self-contained inside `index.html` with no external build steps or Node.js runtime required.
+Everything runs in the browser — no build step, no server-side runtime, no Node.js. All markup, styles and logic live in `index.html`; the only additional files are two local image assets.
+
+### Files:
+| File | Purpose |
+| :--- | :--- |
+| `index.html` | The entire application — markup, styles and logic. |
+| `background.webp` | Hero background image (1920×1012), loaded relatively. |
+| `wild.webp` | WildNetwork logo displayed in the header. |
 
 ### Tech Stack:
 * **HTML5 / Vanilla JavaScript (ES6+)**
-* **Tailwind CSS (via CDN)**
+* **Tailwind CSS (via CDN)**, plus a small inline `<style>` block for the custom scrollbars and the page background
 * **LocalStorage API** (Key: `wildprison_optimizer_data`)
+* **GitHub Pages** hosting (`main` branch, root folder)
 
 ### Core JS Functions:
 * `parseAmountWithUnit(inputId, unitSelectId)` — Extracts values, parses inline suffixes/dropdowns, and converts to base SP.
+* `normalizeNumberInput(rawNumber)` — Normalizes separators: comma or dot as a decimal separator (`1,5` → `1.5`) and repeated 3-digit groups as thousands separators (`1,000` / `1.000` → `1000`).
 * `formatSpToBestUnit(spVal)` — Converts raw SP values into readable units (QT, S, SP, O, N).
 * `calculateTokens()` — Calculates SP split targets (1:1, 3:1, 10:1, 1:1) and emits allocation guidance.
 * `calculateAscension()` — Evaluates the active Ascension phase, progress percentage, and mini-bar UI.
@@ -101,11 +110,21 @@ The application is fully self-contained inside `index.html` with no external bui
 
 ---
 
+## 🎨 DESIGN & ASSETS
+
+The interface deliberately mirrors the official server website so players feel at home:
+* **Palette:** dark `zinc` surfaces with the server's brand gold `#FFAA00`.
+* **The logo (`wild.webp`) and the background image (`background.webp`) are borrowed from the official server website** — [wildnetwork.net](https://wildnetwork.net/).
+* Custom dark scrollbars are defined in an inline `<style>` block (`::-webkit-scrollbar` for Chrome/Edge/Safari, `scrollbar-color` for Firefox).
+* The tier list intentionally keeps its own semantic colours (`emerald` / `sky` / `yellow` / `orange` / `red`) — those are not part of the brand palette.
+
+---
+
 ## 🤖 AI HANDOVER BRIEFING
 
 Hello! If you are an AI model continuing development on this project, adhere to these guidelines:
 
-1. **Single-File SPA Structure:** Maintain the entire interface and logic inside `index.html`.
+1. **Structure:** Keep the entire interface and logic inside `index.html`. The only permitted extra files are local image assets (`background.webp`, `wild.webp`), always referenced with relative paths so the tool works both from disk and on GitHub Pages.
 2. **Persistence:** Ensure all input fields, currency selections, and checkboxes remain wired to `saveProgress()` and `loadProgress()`.
 3. **Sacrifice Ratios** (thresholds are exclusive — the ratio changes only *after* you exceed them):
    * `<= 1 SP`: 1:1
@@ -113,4 +132,4 @@ Hello! If you are an AI model continuing development on this project, adhere to 
    * `> 100 to 1,000 SP (1 O)`: 10:1
    * `> 1,000 SP (> 1 O)`: 1:1 (per officer instructions).
 4. **Currency Multipliers:** Modify unit conversions exclusively inside the `CURRENCY_MULTIPLIERS` object.
-5. **UI Aesthetics:** Preserve the dark Tailwind CSS theme (`slate-900`, `amber-400`, `emerald-400`).
+5. **UI Aesthetics:** Preserve the WildNetwork look — `zinc` surfaces, the brand gold `#FFAA00` (written as `[#FFAA00]` classes) and `emerald-400` for positive states. Do not reintroduce the old `slate` / `amber` palette.
