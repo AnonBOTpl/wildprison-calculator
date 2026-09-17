@@ -511,7 +511,7 @@
             let xpRatio = 0.5;
 
             // Progi wg instrukcji officera: przelicznik wchodzi dopiero PO przekroczeniu wartosci.
-            // <=1 SP -> 1:1 | >1 - 100 SP -> 3:1 | >100 - 1,000 SP (1 O) -> 10:1 | >1,000 SP -> 1:1
+            // <=1 SP -> 1:1 | >1 - 100 SP -> 3:1 | >100 - 1,000 SP (1 O) -> 10:1 | >1,000 SP -> 1:3
             if (totalSp <= 1) {
                 ratioLabel = "Up to ~1 SP (1:1 Ratio)";
                 moneyRatio = 0.5;
@@ -525,9 +525,9 @@
                 moneyRatio = 10 / 11;
                 xpRatio = 1 / 11;
             } else {
-                ratioLabel = "Above 1,000 SP / 1 O (Switch back to 1:1 Ratio)";
-                moneyRatio = 0.5;
-                xpRatio = 0.5;
+                ratioLabel = "Above 1,000 SP / 1 O (1:3 Ratio)";
+                moneyRatio = 0.25;
+                xpRatio = 0.75;
             }
 
             document.getElementById('targetRatioDisplay').innerText = ratioLabel;
