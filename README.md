@@ -36,7 +36,7 @@ Optimal allocation ratio (**Money Goal vs XP Goal**) — the ratio switches only
 * **Up to ~1 SP:** **1:1** Ratio (50% Money / 50% XP)
 * **After 1 SP (up to 100 SP):** **3:1** Ratio (75% Money / 25% XP)
 * **After 100 SP (up to 1,000 SP / 1 O):** **10:1** Ratio (~90.9% Money / ~9.1% XP)
-* **Above 1,000 SP (1 O):** Switch back to **1:1** Ratio (50% Money / 50% XP)
+* **Above 1,000 SP (1 O):** Switch to **1:3** Ratio (25% Money / 75% XP)
 
 ---
 
@@ -130,6 +130,6 @@ Hello! If you are an AI model continuing development on this project, adhere to 
    * `<= 1 SP`: 1:1
    * `> 1 to 100 SP`: 3:1
    * `> 100 to 1,000 SP (1 O)`: 10:1
-   * `> 1,000 SP (> 1 O)`: 1:1 (per officer instructions).
+   * `> 1,000 SP (> 1 O)`: 1:3 (per officer instructions).
 4. **Currency Multipliers:** Modify unit conversions exclusively inside the `CURRENCY_MULTIPLIERS` object.
 5. **UI Aesthetics:** Preserve the WildNetwork look — `zinc` surfaces, the brand gold `#FFAA00` (written as `[#FFAA00]` classes) and `emerald-400` for positive states. Do not reintroduce the old `slate` / `amber` palette.
