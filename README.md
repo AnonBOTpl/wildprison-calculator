@@ -1,8 +1,8 @@
-# WildPrison - Gang Optimization Tool v3.3 🚀
+# WildPrison - Gang Optimization Tool v3.4 🚀
 
 A professional calculator and tactical dashboard designed for **WildPrison** (Minecraft OP Prison) players. The application optimizes **Token Sacrifice** management, **Ascension** upgrade prioritization, and **Research** tree tracking.
 
-The application is delivered as a static Single Page Application (SPA) built around `index.html` and two local image assets. It relies on Tailwind CSS and browser `LocalStorage`, and is hosted on GitHub Pages: https://anonbotpl.github.io/wildprison-calculator/
+The application is delivered as a static Single Page Application (SPA) built around `index.html` (the calculator), a small `vote.html` page with server voting links, and two local image assets. It relies on Tailwind CSS and browser `LocalStorage`, and is hosted on GitHub Pages: https://anonbotpl.github.io/wildprison-calculator/
 
 ---
 
@@ -83,12 +83,13 @@ The research module includes an account audit score engine (**Research Audit Sco
 
 ## 💻 TECHNICAL ARCHITECTURE & CODE
 
-Everything runs in the browser — no build step, no server-side runtime, no Node.js. All markup, styles and logic live in `index.html`; the only additional files are two local image assets.
+Everything runs in the browser — no build step, no server-side runtime, no Node.js. All calculator markup, styles and logic live in `index.html`; the only additional files are the static `vote.html` links page and two local image assets.
 
 ### Files:
 | File | Purpose |
 | :--- | :--- |
-| `index.html` | The entire application — markup, styles and logic. |
+| `index.html` | The entire calculator — markup, styles and logic. |
+| `vote.html` | Static page with the server's voting links (13 vote sites), opened from the **Vote** button in the header. Contains no logic. |
 | `background.webp` | Hero background image (1920×1012), loaded relatively. |
 | `wild.webp` | WildNetwork logo displayed in the header. |
 
@@ -124,7 +125,7 @@ The interface deliberately mirrors the official server website so players feel a
 
 Hello! If you are an AI model continuing development on this project, adhere to these guidelines:
 
-1. **Structure:** Keep the entire interface and logic inside `index.html`. The only permitted extra files are local image assets (`background.webp`, `wild.webp`), always referenced with relative paths so the tool works both from disk and on GitHub Pages.
+1. **Structure:** Keep the entire calculator interface and logic inside `index.html`. The only permitted extra files are the static `vote.html` links page and local image assets (`background.webp`, `wild.webp`), always referenced with relative paths so the tool works both from disk and on GitHub Pages.
 2. **Persistence:** Ensure all input fields, currency selections, and checkboxes remain wired to `saveProgress()` and `loadProgress()`.
 3. **Sacrifice Ratios** (thresholds are exclusive — the ratio changes only *after* you exceed them):
    * `<= 1 SP`: 1:1
