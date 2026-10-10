@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WildPrison - Gang Optimization Tool v3.7</title>
+    <title>WildPrison - Gang Optimization Tool v3.8</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* ==== Ciemny, custom pasek przewijania (Chrome / Edge / Safari) ==== */
@@ -395,7 +395,7 @@
             <div class="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1">
                 <span class="font-bold tracking-wide text-[#FFAA00]">WildPrison Gang Optimizer</span>
                 <span class="text-zinc-600">•</span>
-                <span>v3.7</span>
+                <span>v3.8</span>
                 <span class="text-zinc-600">•</span>
                 <span>10.10.2026</span>
             </div>
@@ -605,7 +605,7 @@
 
         // Ile dołożyć wyłącznie do jednej strony, żeby osiągnąć idealny podział.
         // Dokładne rozwiązanie (funkcja jest ciągła, więc nie ma przeskoków).
-        function getBalanceAdvice(moneySp, xpSp) {
+        function getBalanceAdviceExact(moneySp, xpSp) {
             const total = moneySp + xpSp;
             const targetMoney = getSacrificeTargets(total).money;
             let lower = 0;
@@ -632,6 +632,35 @@
                 lower = t.upper;
             }
             return { side: 'XP', amount: 0, note: '' };
+        }
+
+        // Najmniejsza ilość dołożona do brakującej strony, po której podział mieści się w tolerancji 5%
+        // ("zielony" komunikat). To zwykle dużo mniej niż ilość potrzebna do idealnego balansu.
+        function getBalanceAdvice(moneySp, xpSp) {
+            const exact = getBalanceAdviceExact(moneySp, xpSp);
+            const apply = (d) => isSacrificeBalanced(
+                exact.side === 'Money' ? moneySp + d : moneySp,
+                exact.side === 'XP' ? xpSp + d : xpSp);
+            let lo = 0, hi = exact.amount;
+            if (apply(0)) {
+                hi = 0;
+            } else {
+                for (let i = 0; i < 60; i++) {
+                    const mid = (lo + hi) / 2;
+                    if (apply(mid)) hi = mid; else lo = mid;
+                }
+            }
+            const toGreen = Math.min(Math.ceil(hi * 100) / 100, exact.amount);
+            return { side: exact.side, amount: exact.amount, toGreen: toGreen, note: '' };
+        }
+
+        // Tekst wskazówki: główna liczba = powrót do optymalnego podziału, w nawiasie idealny balans
+        function describeBalanceAdvice(adv, html) {
+            const bold = (s) => html ? `<strong>${s}</strong>` : s;
+            const main = `Put your next ${bold(formatSpToBestUnit(adv.toGreen))} strictly into ${bold(adv.side)} to get back to an optimal split.`;
+            const showPerfect = adv.amount > adv.toGreen * 1.05 + 0.01;
+            const perfect = showPerfect ? ` Perfect balance: ${formatSpToBestUnit(adv.amount)}.` : '';
+            return html && showPerfect ? `${main}<span class="block mt-1 text-[11px] opacity-70">${perfect.trim()}</span>` : main + perfect;
         }
 
         function calculateTokens() {
@@ -687,11 +716,11 @@
             } else if (diffMoneySp < 0) {
                 const adv = getBalanceAdvice(moneySp, xpSp);
                 statusDiv.className = "p-2.5 rounded-lg text-xs font-medium bg-[#3B2900]/60 border border-[#7A5200] text-[#FFC44D]";
-                statusDiv.innerHTML = `⚠️ <strong>Over-invested in XP:</strong> Put your next <strong>${formatSpToBestUnit(adv.amount)}</strong> strictly into <strong>Money</strong>.`;
+                statusDiv.innerHTML = `⚠️ <strong>Over-invested in XP:</strong> ${describeBalanceAdvice(adv, true)}`;
             } else {
                 const adv = getBalanceAdvice(moneySp, xpSp);
                 statusDiv.className = "p-2.5 rounded-lg text-xs font-medium bg-[#3B2900]/60 border border-[#7A5200] text-[#FFC44D]";
-                statusDiv.innerHTML = `⚠️ <strong>Over-invested in Money:</strong> Put your next <strong>${formatSpToBestUnit(adv.amount)}</strong> strictly into <strong>XP</strong>.`;
+                statusDiv.innerHTML = `⚠️ <strong>Over-invested in Money:</strong> ${describeBalanceAdvice(adv, true)}`;
             }
 
             saveProgress();
@@ -894,7 +923,7 @@
                 } else {
                     const adv = getBalanceAdvice(fm, fx);
                     statusEl.className = 'text-xs text-[#FFC44D]';
-                    statusEl.innerText = `⚠️ Still unbalanced after this: next put ${formatSpToBestUnit(adv.amount)} into ${adv.side}.`;
+                    statusEl.innerText = `⚠️ Still unbalanced after this. ${describeBalanceAdvice(adv, false)}`;
                 }
             } else {
                 statusEl.className = 'text-xs';
