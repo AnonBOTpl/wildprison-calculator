@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WildPrison - Gang Optimization Tool v3.5</title>
+    <title>WildPrison - Gang Optimization Tool v3.4</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* ==== Ciemny, custom pasek przewijania (Chrome / Edge / Safari) ==== */
@@ -60,10 +60,6 @@
                     <span class="text-2xl">💎</span>
                     <h2 class="text-xl font-bold text-zinc-200">Token Sacrifice</h2>
                 </div>
-
-                <button id="qsOpenBtn" type="button" onclick="openQuickSplit()" class="w-full text-xs bg-zinc-900/60 border border-dashed border-[#FFAA00]/50 hover:border-[#FFAA00] hover:bg-[#FFAA00]/10 text-[#FFAA00] px-3 py-2 rounded-lg font-semibold transition flex items-center justify-center gap-1.5">
-                    <span>⚡</span> Quick split
-                </button>
 
                 <div class="space-y-3">
                     <div>
@@ -395,64 +391,12 @@
             <div class="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1">
                 <span class="font-bold tracking-wide text-[#FFAA00]">WildPrison Gang Optimizer</span>
                 <span class="text-zinc-600">•</span>
-                <span>v3.5</span>
+                <span>v3.4</span>
                 <span class="text-zinc-600">•</span>
-                <span>10.10.2026</span>
+                <span>01.10.2026</span>
             </div>
             <a href="https://github.com/AnonBOTpl/wildprison-calculator" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-700/70 px-2.5 py-1 font-semibold text-zinc-300 transition-colors hover:border-[#FFAA00]/60 hover:text-[#FFAA00]">GitHub ↗</a>
         </footer>
-    </div>
-
-    <!-- Quick split: osobna kalkulacja podziału tokenów (okienko) -->
-    <div id="quickSplitModal" class="hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onmousedown="if (event.target === this) closeQuickSplit()">
-        <div class="w-full max-w-sm bg-zinc-800 border border-zinc-700 rounded-xl p-5 shadow-2xl space-y-4" role="dialog" aria-modal="true" aria-labelledby="qsTitle">
-            <div class="flex items-center justify-between border-b border-zinc-700 pb-2">
-                <h2 id="qsTitle" class="text-lg font-bold text-[#FFAA00] flex items-center gap-2"><span>⚡</span> Quick split</h2>
-                <button type="button" onclick="closeQuickSplit()" aria-label="Close" class="text-zinc-400 hover:text-white text-xl leading-none px-1">&times;</button>
-            </div>
-
-            <p class="text-xs text-zinc-400">Separate calculation: enter the tokens you have and see how to split them between Money and XP.</p>
-
-            <div>
-                <label for="qsInput" class="block text-xs font-semibold text-zinc-400 uppercase mb-1">Tokens to sacrifice</label>
-                <div class="flex gap-2">
-                    <input type="text" id="qsInput" inputmode="decimal" value="0" oninput="calculateQuickSplit()" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#FFAA00] text-sm">
-                    <select id="qsUnit" onchange="calculateQuickSplit()" class="bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-2 text-[#FFAA00] font-bold text-xs focus:outline-none focus:border-[#FFAA00]">
-                        <option value="QT">QT</option>
-                        <option value="S">S</option>
-                        <option value="SP" selected>SP</option>
-                        <option value="O">O</option>
-                        <option value="N">N</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="bg-zinc-900/60 rounded-lg p-3 space-y-1 text-sm">
-                <div class="flex justify-between items-center">
-                    <span class="text-zinc-400">Total:</span>
-                    <span id="qsTotal" class="font-bold text-[#FFAA00]">0.00 SP</span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-zinc-400">Ratio (Money : XP):</span>
-                    <span id="qsRatio" class="font-semibold text-sky-400">1:1</span>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-2 text-sm">
-                <div class="bg-zinc-900/60 p-2 rounded text-center">
-                    <div class="text-xs text-zinc-400">Put into Money</div>
-                    <div id="qsMoney" class="font-bold text-emerald-400 break-words">0.00 SP</div>
-                    <div id="qsMoneyPct" class="text-[11px] text-zinc-500 min-h-[14px]"></div>
-                </div>
-                <div class="bg-zinc-900/60 p-2 rounded text-center">
-                    <div class="text-xs text-zinc-400">Put into XP</div>
-                    <div id="qsXp" class="font-bold text-purple-400 break-words">0.00 SP</div>
-                    <div id="qsXpPct" class="text-[11px] text-zinc-500 min-h-[14px]"></div>
-                </div>
-            </div>
-
-            <div id="qsNext" class="text-xs text-zinc-500 min-h-[16px]"></div>
-        </div>
     </div>
 
     <script>
@@ -770,55 +714,6 @@
         calculateTokens();
         calculateAscension();
         updateResearch();
-
-        // ===== Quick split: osobna kalkulacja (niezależna od pól Money / XP) =====
-        // Progi muszą być zgodne z calculateTokens().
-        function getQuickSplitTier(totalSp) {
-            if (totalSp <= 1) return { label: '1:1', moneyShare: 0.5, nextAt: 1, nextLabel: '3:1' };
-            if (totalSp <= 100) return { label: '3:1', moneyShare: 0.75, nextAt: 100, nextLabel: '10:1' };
-            if (totalSp <= 1000) return { label: '10:1', moneyShare: 10 / 11, nextAt: 1000, nextLabel: '1:3' };
-            return { label: '1:3', moneyShare: 0.25, nextAt: null, nextLabel: '' };
-        }
-
-        function calculateQuickSplit() {
-            const totalSp = parseAmountWithUnit('qsInput', 'qsUnit');
-            const tier = getQuickSplitTier(totalSp);
-            const moneySp = totalSp * tier.moneyShare;
-            const xpSp = totalSp - moneySp;
-            const moneyPct = Math.round(tier.moneyShare * 100);
-
-            document.getElementById('qsTotal').innerText = formatSpToBestUnit(totalSp);
-            document.getElementById('qsRatio').innerText = tier.label;
-            document.getElementById('qsMoney').innerText = formatSpToBestUnit(moneySp);
-            document.getElementById('qsXp').innerText = formatSpToBestUnit(xpSp);
-            document.getElementById('qsMoneyPct').innerText = totalSp > 0 ? `${moneyPct}% of your tokens` : '';
-            document.getElementById('qsXpPct').innerText = totalSp > 0 ? `${100 - moneyPct}% of your tokens` : '';
-            document.getElementById('qsNext').innerText = tier.nextAt
-                ? `Ratio switches to ${tier.nextLabel} above ${formatSpToBestUnit(tier.nextAt)} (${formatSpToBestUnit(Math.max(tier.nextAt - totalSp, 0))} to go).`
-                : '';
-        }
-
-        function openQuickSplit() {
-            const modal = document.getElementById('quickSplitModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            calculateQuickSplit();
-            const input = document.getElementById('qsInput');
-            input.focus();
-            input.select();
-        }
-
-        function closeQuickSplit() {
-            const modal = document.getElementById('quickSplitModal');
-            if (modal.classList.contains('hidden')) return;
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            document.getElementById('qsOpenBtn').focus();
-        }
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeQuickSplit();
-        });
     </script>
 </body>
 </html>
