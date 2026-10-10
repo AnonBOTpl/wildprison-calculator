@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WildPrison - Gang Optimization Tool v3.5</title>
+    <title>WildPrison - Gang Optimization Tool v3.7</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* ==== Ciemny, custom pasek przewijania (Chrome / Edge / Safari) ==== */
@@ -395,7 +395,7 @@
             <div class="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1">
                 <span class="font-bold tracking-wide text-[#FFAA00]">WildPrison Gang Optimizer</span>
                 <span class="text-zinc-600">•</span>
-                <span>v3.5</span>
+                <span>v3.7</span>
                 <span class="text-zinc-600">•</span>
                 <span>10.10.2026</span>
             </div>
@@ -403,15 +403,13 @@
         </footer>
     </div>
 
-    <!-- Quick split: osobna kalkulacja podziału tokenów (okienko) -->
+    <!-- Quick split: podział nowych tokenów (okienko) -->
     <div id="quickSplitModal" class="hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onmousedown="if (event.target === this) closeQuickSplit()">
-        <div class="w-full max-w-sm bg-zinc-800 border border-zinc-700 rounded-xl p-5 shadow-2xl space-y-4" role="dialog" aria-modal="true" aria-labelledby="qsTitle">
+        <div class="w-full max-w-sm max-h-full overflow-y-auto bg-zinc-800 border border-zinc-700 rounded-xl p-5 shadow-2xl space-y-4" role="dialog" aria-modal="true" aria-labelledby="qsTitle">
             <div class="flex items-center justify-between border-b border-zinc-700 pb-2">
                 <h2 id="qsTitle" class="text-lg font-bold text-[#FFAA00] flex items-center gap-2"><span>⚡</span> Quick split</h2>
                 <button type="button" onclick="closeQuickSplit()" aria-label="Close" class="text-zinc-400 hover:text-white text-xl leading-none px-1">&times;</button>
             </div>
-
-            <p class="text-xs text-zinc-400">Separate calculation: enter the tokens you have and see how to split them between Money and XP.</p>
 
             <div>
                 <label for="qsInput" class="block text-xs font-semibold text-zinc-400 uppercase mb-1">Tokens to sacrifice</label>
@@ -427,10 +425,19 @@
                 </div>
             </div>
 
+            <div class="bg-zinc-900/60 rounded-lg p-3 space-y-1.5">
+                <label class="flex items-start gap-2 text-xs text-zinc-300 cursor-pointer select-none">
+                    <!-- zapisywany razem z resztą checkboxów przez saveProgress() -->
+                    <input type="checkbox" id="qsUseCurrent" checked onchange="saveProgress(); calculateQuickSplit()" class="mt-0.5 accent-[#FFAA00]">
+                    <span>Use my current Money / XP from the calculator</span>
+                </label>
+                <div id="qsCurrentInfo" class="text-[11px] text-zinc-500 break-words"></div>
+            </div>
+
             <div class="bg-zinc-900/60 rounded-lg p-3 space-y-1 text-sm">
-                <div class="flex justify-between items-center">
-                    <span class="text-zinc-400">Total:</span>
-                    <span id="qsTotal" class="font-bold text-[#FFAA00]">0.00 SP</span>
+                <div class="flex justify-between items-center gap-2">
+                    <span id="qsTotalLabel" class="text-zinc-400">Total:</span>
+                    <span id="qsTotal" class="font-bold text-[#FFAA00] text-right break-words">0.00 SP</span>
                 </div>
                 <div class="flex justify-between items-center">
                     <span class="text-zinc-400">Ratio (Money : XP):</span>
@@ -442,15 +449,16 @@
                 <div class="bg-zinc-900/60 p-2 rounded text-center">
                     <div class="text-xs text-zinc-400">Put into Money</div>
                     <div id="qsMoney" class="font-bold text-emerald-400 break-words">0.00 SP</div>
-                    <div id="qsMoneyPct" class="text-[11px] text-zinc-500 min-h-[14px]"></div>
+                    <div id="qsMoneySub" class="text-[11px] text-zinc-500 min-h-[14px] break-words"></div>
                 </div>
                 <div class="bg-zinc-900/60 p-2 rounded text-center">
                     <div class="text-xs text-zinc-400">Put into XP</div>
                     <div id="qsXp" class="font-bold text-purple-400 break-words">0.00 SP</div>
-                    <div id="qsXpPct" class="text-[11px] text-zinc-500 min-h-[14px]"></div>
+                    <div id="qsXpSub" class="text-[11px] text-zinc-500 min-h-[14px] break-words"></div>
                 </div>
             </div>
 
+            <div id="qsStatus" class="text-xs min-h-[16px]"></div>
             <div id="qsNext" class="text-xs text-zinc-500 min-h-[16px]"></div>
         </div>
     </div>
@@ -466,7 +474,7 @@
 
         function normalizeNumberInput(rawNumber) {
             // Separator tysięcy: "1,000" / "1.000" -> 1000 ; separator dziesiętny: "1,5" / "1.5" -> 1.5
-            if (/^\d{1,3}(?:[,.]\d{3})+$/.test(rawNumber)) {
+            if (/^[1-9]\d{0,2}(?:[,.]\d{3})+$/.test(rawNumber)) {
                 return rawNumber.replace(/[,.]/g, '');
             }
             return rawNumber.replace(',', '.');
@@ -558,6 +566,74 @@
         }
 
         // --- CALCULATORS ---
+        // ===== Przelicznik Token Sacrifice: PROGRESYWNY (jak podatek) =====
+        // Każdy przedział sumy ma własne ratio. Nowe ratio dotyczy tylko tokenów POWYŻEJ progu,
+        // a to co już poświęcone zostaje rozliczone po starym ratio (np. 200 SP = 100 po 3:1 + 100 po 10:1).
+        // Wartości do dostrojenia: moneyShare = udział Money w danym przedziale.
+        const SACRIFICE_TIERS = [
+            { upper: 1,        moneyShare: 0.5,     label: '1:1'  },  // do 1 SP
+            { upper: 100,      moneyShare: 0.75,    label: '3:1'  },  // 1 - 100 SP
+            { upper: 1000,     moneyShare: 10 / 11, label: '10:1' },  // 100 - 1000 SP (1 O)
+            { upper: Infinity, moneyShare: 0.25,    label: '1:3'  }   // powyżej 1000 SP
+        ];
+        const TIER_EPS = 1e-9;
+
+        // Przedział, w którym akurat jesteś (dla etykiety "aktualne ratio")
+        function getSacrificeTierIndex(totalSp) {
+            for (let i = 0; i < SACRIFICE_TIERS.length; i++) {
+                if (totalSp <= SACRIFICE_TIERS[i].upper + TIER_EPS) return i;
+            }
+            return SACRIFICE_TIERS.length - 1;
+        }
+
+        // Idealny podział sumy: ile powinno być w Money, a ile w XP
+        function getSacrificeTargets(totalSp) {
+            let money = 0, prev = 0;
+            for (const t of SACRIFICE_TIERS) {
+                if (totalSp <= prev) break;
+                money += (Math.min(totalSp, t.upper) - prev) * t.moneyShare;
+                prev = t.upper;
+            }
+            return { money: money, xp: totalSp - money };
+        }
+
+        function isSacrificeBalanced(moneySp, xpSp) {
+            const total = moneySp + xpSp;
+            if (total <= 0) return true;
+            return Math.abs(moneySp - getSacrificeTargets(total).money) < total * 0.05;
+        }
+
+        // Ile dołożyć wyłącznie do jednej strony, żeby osiągnąć idealny podział.
+        // Dokładne rozwiązanie (funkcja jest ciągła, więc nie ma przeskoków).
+        function getBalanceAdvice(moneySp, xpSp) {
+            const total = moneySp + xpSp;
+            const targetMoney = getSacrificeTargets(total).money;
+            let lower = 0;
+            if (moneySp < targetMoney) {
+                // Za mało w Money: m + d = cel(total + d)
+                for (const t of SACRIFICE_TIERS) {
+                    const s = t.moneyShare;
+                    const d = (getSacrificeTargets(lower).money + s * (total - lower) - moneySp) / (1 - s);
+                    if (d >= -TIER_EPS && total + d >= lower - TIER_EPS && total + d <= t.upper + TIER_EPS) {
+                        return { side: 'Money', amount: Math.max(d, 0), note: '' };
+                    }
+                    lower = t.upper;
+                }
+                return { side: 'Money', amount: 0, note: '' };
+            }
+            // Za mało w XP: znajdź sumę, przy której cel Money = obecne Money
+            for (const t of SACRIFICE_TIERS) {
+                const atLower = getSacrificeTargets(lower).money;
+                const atUpper = t.upper === Infinity ? Infinity : getSacrificeTargets(t.upper).money;
+                if (moneySp >= atLower - TIER_EPS && moneySp <= atUpper + TIER_EPS) {
+                    const newTotal = lower + (moneySp - atLower) / t.moneyShare;
+                    return { side: 'XP', amount: Math.max(newTotal - total, 0), note: '' };
+                }
+                lower = t.upper;
+            }
+            return { side: 'XP', amount: 0, note: '' };
+        }
+
         function calculateTokens() {
             const moneySp = parseAmountWithUnit('moneyInput', 'moneyUnit');
             const xpSp = parseAmountWithUnit('xpInput', 'xpUnit');
@@ -591,8 +667,10 @@
 
             document.getElementById('targetRatioDisplay').innerText = ratioLabel;
 
-            const targetMoneySp = totalSp * moneyRatio;
-            const targetXpSp = totalSp * xpRatio;
+            // Cele liczone progresywnie (nie jedno ratio dla całej sumy)
+            const targets = getSacrificeTargets(totalSp);
+            const targetMoneySp = targets.money;
+            const targetXpSp = targets.xp;
 
             document.getElementById('targetMoney').innerText = formatSpToBestUnit(targetMoneySp);
             document.getElementById('targetXp').innerText = formatSpToBestUnit(targetXpSp);
@@ -607,13 +685,13 @@
                 statusDiv.className = "p-2.5 rounded-lg text-xs font-medium bg-emerald-950/60 border border-emerald-800 text-emerald-300";
                 statusDiv.innerHTML = "✅ <strong>Optimal Split:</strong> Your Token Sacrifice allocation is perfectly balanced!";
             } else if (diffMoneySp < 0) {
-                const deficitSp = Math.abs(diffMoneySp);
+                const adv = getBalanceAdvice(moneySp, xpSp);
                 statusDiv.className = "p-2.5 rounded-lg text-xs font-medium bg-[#3B2900]/60 border border-[#7A5200] text-[#FFC44D]";
-                statusDiv.innerHTML = `⚠️ <strong>Over-invested in XP:</strong> Put your next <strong>${formatSpToBestUnit(deficitSp)}</strong> strictly into <strong>Money</strong>.`;
+                statusDiv.innerHTML = `⚠️ <strong>Over-invested in XP:</strong> Put your next <strong>${formatSpToBestUnit(adv.amount)}</strong> strictly into <strong>Money</strong>.`;
             } else {
-                const deficitSp = Math.abs(diffMoneySp);
+                const adv = getBalanceAdvice(moneySp, xpSp);
                 statusDiv.className = "p-2.5 rounded-lg text-xs font-medium bg-[#3B2900]/60 border border-[#7A5200] text-[#FFC44D]";
-                statusDiv.innerHTML = `⚠️ <strong>Over-invested in Money:</strong> Put your next <strong>${formatSpToBestUnit(deficitSp)}</strong> strictly into <strong>XP</strong>.`;
+                statusDiv.innerHTML = `⚠️ <strong>Over-invested in Money:</strong> Put your next <strong>${formatSpToBestUnit(adv.amount)}</strong> strictly into <strong>XP</strong>.`;
             }
 
             saveProgress();
@@ -771,30 +849,60 @@
         calculateAscension();
         updateResearch();
 
-        // ===== Quick split: osobna kalkulacja (niezależna od pól Money / XP) =====
-        // Progi muszą być zgodne z calculateTokens().
-        function getQuickSplitTier(totalSp) {
-            if (totalSp <= 1) return { label: '1:1', moneyShare: 0.5, nextAt: 1, nextLabel: '3:1' };
-            if (totalSp <= 100) return { label: '3:1', moneyShare: 0.75, nextAt: 100, nextLabel: '10:1' };
-            if (totalSp <= 1000) return { label: '10:1', moneyShare: 10 / 11, nextAt: 1000, nextLabel: '1:3' };
-            return { label: '1:3', moneyShare: 0.25, nextAt: null, nextLabel: '' };
-        }
-
+        // ===== Quick split =====
+        // Tryb 1 (domyślny): uwzględnia Money/XP z głównej karty i dzieli NOWE tokeny tak,
+        //                    żeby po sacrifice być jak najbliżej idealnego podziału nowej sumy.
+        // Tryb 2 (przełącznik wyłączony): osobna kalkulacja samej wpisanej ilości (od zera).
         function calculateQuickSplit() {
-            const totalSp = parseAmountWithUnit('qsInput', 'qsUnit');
-            const tier = getQuickSplitTier(totalSp);
-            const moneySp = totalSp * tier.moneyShare;
-            const xpSp = totalSp - moneySp;
-            const moneyPct = Math.round(tier.moneyShare * 100);
+            const newSp = parseAmountWithUnit('qsInput', 'qsUnit');
+            const useCurrent = document.getElementById('qsUseCurrent').checked;
+            const curMoney = useCurrent ? parseAmountWithUnit('moneyInput', 'moneyUnit') : 0;
+            const curXp = useCurrent ? parseAmountWithUnit('xpInput', 'xpUnit') : 0;
 
-            document.getElementById('qsTotal').innerText = formatSpToBestUnit(totalSp);
+            const finalTotal = curMoney + curXp + newSp;
+            const tierIdx = getSacrificeTierIndex(finalTotal);
+            const tier = SACRIFICE_TIERS[tierIdx];
+            const targetMoney = getSacrificeTargets(finalTotal).money;
+            const addMoney = Math.min(Math.max(targetMoney - curMoney, 0), newSp);
+            const addXp = newSp - addMoney;
+
+            document.getElementById('qsCurrentInfo').innerText = useCurrent
+                ? `Currently: Money ${formatSpToBestUnit(curMoney)}, XP ${formatSpToBestUnit(curXp)}`
+                : 'Calculating from zero: only the tokens entered above.';
+            document.getElementById('qsTotalLabel').innerText = useCurrent ? 'Total after sacrifice:' : 'Total:';
+            document.getElementById('qsTotal').innerText = formatSpToBestUnit(finalTotal);
             document.getElementById('qsRatio').innerText = tier.label;
-            document.getElementById('qsMoney').innerText = formatSpToBestUnit(moneySp);
-            document.getElementById('qsXp').innerText = formatSpToBestUnit(xpSp);
-            document.getElementById('qsMoneyPct').innerText = totalSp > 0 ? `${moneyPct}% of your tokens` : '';
-            document.getElementById('qsXpPct').innerText = totalSp > 0 ? `${100 - moneyPct}% of your tokens` : '';
-            document.getElementById('qsNext').innerText = tier.nextAt
-                ? `Ratio switches to ${tier.nextLabel} above ${formatSpToBestUnit(tier.nextAt)} (${formatSpToBestUnit(Math.max(tier.nextAt - totalSp, 0))} to go).`
+            document.getElementById('qsMoney').innerText = formatSpToBestUnit(addMoney);
+            document.getElementById('qsXp').innerText = formatSpToBestUnit(addXp);
+
+            if (useCurrent) {
+                document.getElementById('qsMoneySub').innerText = newSp > 0 ? `→ Money ${formatSpToBestUnit(curMoney + addMoney)}` : '';
+                document.getElementById('qsXpSub').innerText = newSp > 0 ? `→ XP ${formatSpToBestUnit(curXp + addXp)}` : '';
+            } else {
+                const moneyPct = newSp > 0 ? Math.round(addMoney / newSp * 100) : 0;
+                document.getElementById('qsMoneySub').innerText = newSp > 0 ? `${moneyPct}% of your tokens` : '';
+                document.getElementById('qsXpSub').innerText = newSp > 0 ? `${100 - moneyPct}% of your tokens` : '';
+            }
+
+            const statusEl = document.getElementById('qsStatus');
+            if (useCurrent && newSp > 0) {
+                const fm = curMoney + addMoney;
+                const fx = curXp + addXp;
+                if (isSacrificeBalanced(fm, fx)) {
+                    statusEl.className = 'text-xs text-emerald-400';
+                    statusEl.innerText = '✅ After this, your Money / XP will be balanced.';
+                } else {
+                    const adv = getBalanceAdvice(fm, fx);
+                    statusEl.className = 'text-xs text-[#FFC44D]';
+                    statusEl.innerText = `⚠️ Still unbalanced after this: next put ${formatSpToBestUnit(adv.amount)} into ${adv.side}.`;
+                }
+            } else {
+                statusEl.className = 'text-xs';
+                statusEl.innerText = '';
+            }
+
+            document.getElementById('qsNext').innerText = tierIdx + 1 < SACRIFICE_TIERS.length
+                ? `Ratio switches to ${SACRIFICE_TIERS[tierIdx + 1].label} above ${formatSpToBestUnit(tier.upper)} (${formatSpToBestUnit(Math.max(tier.upper - finalTotal, 0))} to go).`
                 : '';
         }
 
