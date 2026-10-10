@@ -1,4 +1,4 @@
-# WildPrison - Gang Optimization Tool v3.4 🚀
+# WildPrison - Gang Optimization Tool v3.7 🚀
 
 A professional calculator and tactical dashboard designed for **WildPrison** (Minecraft OP Prison) players. The application optimizes **Token Sacrifice** management, **Ascension** upgrade prioritization, and **Research** tree tracking.
 
@@ -29,14 +29,24 @@ All internal engine calculations normalize to the base unit **SP (Sacrifice Poin
 
 ---
 
-### 2. 💎 Token Sacrifice Engine (Updated Ratio Rules)
-Sacrifice Points (SP) are calculated as the sum of sacrificed resources: $SP = Money + XP$. 
+### 2. 💎 Token Sacrifice Engine (Progressive Ratio)
+Sacrifice Points (SP) are calculated as the sum of sacrificed resources: $SP = Money + XP$.
 
-Optimal allocation ratio (**Money Goal vs XP Goal**) — the ratio switches only **after** you exceed a threshold:
+The ratio is **progressive** (like a tax bracket): every bracket has its own ratio, and a new ratio applies **only to the SP above its threshold**. Everything below stays split at the earlier ratio (it does *not* flip the whole total at once):
 * **Up to ~1 SP:** **1:1** Ratio (50% Money / 50% XP)
 * **After 1 SP (up to 100 SP):** **3:1** Ratio (75% Money / 25% XP)
 * **After 100 SP (up to 1,000 SP / 1 O):** **10:1** Ratio (~90.9% Money / ~9.1% XP)
-* **Above 1,000 SP (1 O):** Switch to **1:3** Ratio (25% Money / 75% XP)
+* **Above 1,000 SP (1 O):** **1:3** Ratio (25% Money / 75% XP)
+
+Example: at 200 SP the first 100 SP are split ~75 / 25 and the next 100 SP ~90.9 / 9.1, so the ideal total is about **165.7 Money / 34.3 XP**.
+
+The main card shows the **Money Goal / XP Goal** for your current total and tells you exactly how much to put into the lacking side to reach the ideal split.
+
+**⚡ Quick split** (button in the Token Sacrifice card) opens a small popup: enter the tokens you have (with a unit dropdown) and it shows how to split them between Money and XP.
+* With **"Use my current Money / XP"** enabled (default) it reads the main card and splits the *new* tokens so that the final total is as close to the ideal split as possible.
+* With it disabled it calculates from zero, using only the entered amount.
+
+> The 1:1 bracket for the first SP and the exact 10:1 share (10/11) follow the original officer notes; players report the real server rates are approximate in the 100–500 SP range. Tune them in the `SACRIFICE_TIERS` table.
 
 ---
 
@@ -101,9 +111,12 @@ Everything runs in the browser — no build step, no server-side runtime, no Nod
 
 ### Core JS Functions:
 * `parseAmountWithUnit(inputId, unitSelectId)` — Extracts values, parses inline suffixes/dropdowns, and converts to base SP.
-* `normalizeNumberInput(rawNumber)` — Normalizes separators: comma or dot as a decimal separator (`1,5` → `1.5`) and repeated 3-digit groups as thousands separators (`1,000` / `1.000` → `1000`).
+* `normalizeNumberInput(rawNumber)` — Normalizes separators: comma or dot as a decimal separator (`1,5` → `1.5`) and repeated 3-digit groups as thousands separators (`1,000` / `1.000` → `1000`). A number starting with `0` is never treated as a thousands group (`0,125` → `0.125`).
 * `formatSpToBestUnit(spVal)` — Converts raw SP values into readable units (QT, S, SP, O, N).
-* `calculateTokens()` — Calculates SP split targets (1:1, 3:1, 10:1, 1:1) and emits allocation guidance.
+* `getSacrificeTargets(totalSp)` — Ideal Money / XP split for a total, computed progressively over `SACRIFICE_TIERS`.
+* `getBalanceAdvice(moneySp, xpSp)` — Exact amount to put into the lacking side (Money or XP) to reach the ideal split.
+* `calculateTokens()` — Updates the Token Sacrifice card: current ratio, Money / XP goals and allocation guidance.
+* `calculateQuickSplit()` / `openQuickSplit()` / `closeQuickSplit()` — The ⚡ Quick split popup.
 * `calculateAscension()` — Evaluates the active Ascension phase, progress percentage, and mini-bar UI.
 * `updateResearch()` — Determines the next priority node and calculates the audit penalty score.
 * `saveProgress()` / `loadProgress()` — Handles persistent storage for user data and currency selections in `LocalStorage`.
@@ -127,10 +140,11 @@ Hello! If you are an AI model continuing development on this project, adhere to 
 
 1. **Structure:** Keep the entire calculator interface and logic inside `index.html`. The only permitted extra files are the static `vote.html` links page and local image assets (`background.webp`, `wild.webp`), always referenced with relative paths so the tool works both from disk and on GitHub Pages.
 2. **Persistence:** Ensure all input fields, currency selections, and checkboxes remain wired to `saveProgress()` and `loadProgress()`.
-3. **Sacrifice Ratios** (thresholds are exclusive — the ratio changes only *after* you exceed them):
+3. **Sacrifice Ratios** live in the `SACRIFICE_TIERS` table and are applied **progressively** (each bracket only to the SP inside it; never one ratio for the whole total). Thresholds are exclusive — a ratio applies only *after* you exceed the previous threshold:
    * `<= 1 SP`: 1:1
    * `> 1 to 100 SP`: 3:1
    * `> 100 to 1,000 SP (1 O)`: 10:1
    * `> 1,000 SP (> 1 O)`: 1:3 (per officer instructions).
+   Keep `getSacrificeTargets()`, `getBalanceAdvice()` and the Quick split popup on that single table.
 4. **Currency Multipliers:** Modify unit conversions exclusively inside the `CURRENCY_MULTIPLIERS` object.
 5. **UI Aesthetics:** Preserve the WildNetwork look — `zinc` surfaces, the brand gold `#FFAA00` (written as `[#FFAA00]` classes) and `emerald-400` for positive states. Do not reintroduce the old `slate` / `amber` palette.
