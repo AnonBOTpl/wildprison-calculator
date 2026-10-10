@@ -1,4 +1,4 @@
-# WildPrison - Gang Optimization Tool v3.7 🚀
+# WildPrison - Gang Optimization Tool v3.8 🚀
 
 A professional calculator and tactical dashboard designed for **WildPrison** (Minecraft OP Prison) players. The application optimizes **Token Sacrifice** management, **Ascension** upgrade prioritization, and **Research** tree tracking.
 
@@ -40,7 +40,7 @@ The ratio is **progressive** (like a tax bracket): every bracket has its own rat
 
 Example: at 200 SP the first 100 SP are split ~75 / 25 and the next 100 SP ~90.9 / 9.1, so the ideal total is about **165.7 Money / 34.3 XP**.
 
-The main card shows the **Money Goal / XP Goal** for your current total and tells you exactly how much to put into the lacking side to reach the ideal split.
+The main card shows the **Money Goal / XP Goal** for your current total. When you are outside the 5% tolerance it tells you the smallest amount to put into the lacking side to get back to an **optimal split** (the green state), and — if it is much larger — also the amount needed for a **perfect balance**.
 
 **⚡ Quick split** (button in the Token Sacrifice card) opens a small popup: enter the tokens you have (with a unit dropdown) and it shows how to split them between Money and XP.
 * With **"Use my current Money / XP"** enabled (default) it reads the main card and splits the *new* tokens so that the final total is as close to the ideal split as possible.
@@ -114,7 +114,9 @@ Everything runs in the browser — no build step, no server-side runtime, no Nod
 * `normalizeNumberInput(rawNumber)` — Normalizes separators: comma or dot as a decimal separator (`1,5` → `1.5`) and repeated 3-digit groups as thousands separators (`1,000` / `1.000` → `1000`). A number starting with `0` is never treated as a thousands group (`0,125` → `0.125`).
 * `formatSpToBestUnit(spVal)` — Converts raw SP values into readable units (QT, S, SP, O, N).
 * `getSacrificeTargets(totalSp)` — Ideal Money / XP split for a total, computed progressively over `SACRIFICE_TIERS`.
-* `getBalanceAdvice(moneySp, xpSp)` — Exact amount to put into the lacking side (Money or XP) to reach the ideal split.
+* `getBalanceAdviceExact(moneySp, xpSp)` — Exact amount to put into the lacking side (Money or XP) for a perfect split.
+* `getBalanceAdvice(moneySp, xpSp)` — Same, plus `toGreen`: the smallest amount that brings the split back within the 5% tolerance (this is the number shown first).
+* `describeBalanceAdvice(adv, html)` — Builds the guidance text for the main card and the Quick split popup.
 * `calculateTokens()` — Updates the Token Sacrifice card: current ratio, Money / XP goals and allocation guidance.
 * `calculateQuickSplit()` / `openQuickSplit()` / `closeQuickSplit()` — The ⚡ Quick split popup.
 * `calculateAscension()` — Evaluates the active Ascension phase, progress percentage, and mini-bar UI.
