@@ -46,7 +46,7 @@ The main card shows the **Money Goal / XP Goal** for your current total. When yo
 * With **"Use my current Money / XP"** enabled (default) it reads the main card and splits the *new* tokens so that the final total is as close to the ideal split as possible.
 * With it disabled it calculates from zero, using only the entered amount.
 
-> The 1:1 bracket for the first SP and the exact 10:1 share (10/11) follow the original officer notes; players report the real server rates are approximate in the 100–500 SP range. Tune them in the `SACRIFICE_TIERS` table.
+> These brackets are a community strategy built up over many seasons, not a mechanic reported by the game (the game itself does not tell players which ratio to use, which is why this calculator exists). The values — 1:1 for the first SP, the 10:1 bracket as 10/11, 1:3 above 1,000 SP — are the strategy's own choices. If the strategy changes, edit them in the `SACRIFICE_TIERS` table.
 
 ---
 
