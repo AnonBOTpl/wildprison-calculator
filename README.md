@@ -1,4 +1,4 @@
-# WildPrison - Gang Optimization Tool v3.8 🚀
+# WildPrison - Gang Optimization Tool v3.9 🚀
 
 A professional calculator and tactical dashboard designed for **WildPrison** (Minecraft OP Prison) players. The application optimizes **Token Sacrifice** management, **Ascension** upgrade prioritization, and **Research** tree tracking.
 
@@ -36,9 +36,10 @@ The ratio is **progressive** (like a tax bracket): every bracket has its own rat
 * **Up to ~1 SP:** **1:1** Ratio (50% Money / 50% XP)
 * **After 1 SP (up to 100 SP):** **3:1** Ratio (75% Money / 25% XP)
 * **After 100 SP (up to 1,000 SP / 1 O):** **10:1** Ratio (~90.9% Money / ~9.1% XP)
-* **Above 1,000 SP (1 O):** **1:3** Ratio (25% Money / 75% XP)
+* **Above 1,000 SP (1 O), up to 1 N (1,000,000 SP):** **3:1** Ratio (75% Money / 25% XP)
+* **Above 1 N:** no separate ratio is defined (almost nobody gets there), so the same **3:1** is used
 
-Example: at 200 SP the first 100 SP are split ~75 / 25 and the next 100 SP ~90.9 / 9.1, so the ideal total is about **165.7 Money / 34.3 XP**.
+Example: at 200 SP the first 100 SP are split ~75 / 25 and the next 100 SP ~90.9 / 9.1, so the ideal total is about **165.7 Money / 34.3 XP**. Above 1 O every new SP goes 75 / 25 again (3:1).
 
 The main card shows the **Money Goal / XP Goal** for your current total. When you are outside the 5% tolerance it tells you the smallest amount to put into the lacking side to get back to an **optimal split** (the green state), and — if it is much larger — also the amount needed for a **perfect balance**.
 
@@ -46,7 +47,7 @@ The main card shows the **Money Goal / XP Goal** for your current total. When yo
 * With **"Use my current Money / XP"** enabled (default) it reads the main card and splits the *new* tokens so that the final total is as close to the ideal split as possible.
 * With it disabled it calculates from zero, using only the entered amount.
 
-> These brackets are a community strategy built up over many seasons, not a mechanic reported by the game (the game itself does not tell players which ratio to use, which is why this calculator exists). The values — 1:1 for the first SP, the 10:1 bracket as 10/11, 1:3 above 1,000 SP — are the strategy's own choices. If the strategy changes, edit them in the `SACRIFICE_TIERS` table.
+> These brackets are a community strategy built up over many seasons, not a mechanic reported by the game (the game itself does not tell players which ratio to use, which is why this calculator exists). The values — 1:1 for the first SP, the 10:1 bracket as 10/11, 3:1 above 1,000 SP (1 O) — are the strategy's own choices. If the strategy changes, edit them in the `SACRIFICE_TIERS` table.
 
 ---
 
@@ -146,7 +147,7 @@ Hello! If you are an AI model continuing development on this project, adhere to 
    * `<= 1 SP`: 1:1
    * `> 1 to 100 SP`: 3:1
    * `> 100 to 1,000 SP (1 O)`: 10:1
-   * `> 1,000 SP (> 1 O)`: 1:3 (per officer instructions).
+   * `> 1,000 SP (> 1 O)`: 3:1 (up to 1 N = 1,000,000 SP; nothing separate is defined above 1 N).
    Keep `getSacrificeTargets()`, `getBalanceAdvice()` and the Quick split popup on that single table.
 4. **Currency Multipliers:** Modify unit conversions exclusively inside the `CURRENCY_MULTIPLIERS` object.
 5. **UI Aesthetics:** Preserve the WildNetwork look — `zinc` surfaces, the brand gold `#FFAA00` (written as `[#FFAA00]` classes) and `emerald-400` for positive states. Do not reintroduce the old `slate` / `amber` palette.
